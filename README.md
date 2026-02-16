@@ -93,8 +93,5 @@ After SST extraction and QC:
 3. Train a Graph Auto‑Encoder (GAE) to reconstruct adjacency; score candidate missing edges and aggregate to rank bridge-vessel candidates.
 4. Validate using held-out synthetic experiments, manual case studies, and external event overlays (GFW, SAR).
 
-
-
 ---
 
-If you want, I can (a) print the simulated WMTS plan (`data/sst_wmts_sample/plan_simulate.json`), (b) re-run the 5k pilot (confirm unauthenticated), or (c) switch the fallback to a public ERDDAP dataset for faster numeric responses.
