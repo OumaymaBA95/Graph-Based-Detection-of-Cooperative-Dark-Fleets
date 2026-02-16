@@ -15,7 +15,8 @@ Desktop/Senior Project/.DS_Store
 Desktop/Senior Project/venv/
 Desktop/Senior Project/data/
 Desktop/Senior Project/__pycache__/
-Desktop/Senior Project/scripts/__pycache__/.Rproj.user
+Desktop/Senior Project/scripts/__pycache__/
+Desktop/Senior Project/**/__pycache__/
 .Rhistory
 .RData
 .Ruserdata
