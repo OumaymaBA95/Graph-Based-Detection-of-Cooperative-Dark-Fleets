@@ -2,7 +2,7 @@
 
 ## Abstract
 
-This project that aims to detect cooperative "dark" fishing activity. The core idea is to combine vessel movement data with sea-surface temperature (SST) time-series as node attributes, and to use a Graph Auto‑Encoder (GAE) to reconstruct edges and surface likely missing links or bridge vessels.
+This project aims to detect cooperative "dark" fishing activity. The core idea is to combine vessel movement data with sea-surface temperature (SST) time-series as node attributes, and to use a Graph Auto‑Encoder (GAE) to reconstruct edges and surface likely missing links or bridge vessels.
 
 The pipeline is designed for reproducibility: memory-safe streaming of raw CSVs, vectorized SST extraction from local zarr stores, and a targeted remote fallback (WMTS/ERDDAP) to fill remaining missing SST values.
 
