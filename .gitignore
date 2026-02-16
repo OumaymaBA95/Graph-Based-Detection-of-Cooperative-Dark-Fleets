@@ -1,0 +1,21 @@
+# Ignore everything by default to avoid tracking home-directory artifacts
+*
+
+# Allow this gitignore itself
+!.gitignore
+
+# Allow Desktop and the project directory
+!Desktop/
+Desktop/*
+!Desktop/Senior Project/
+!Desktop/Senior Project/**
+
+# Common noise inside the project
+Desktop/Senior Project/.DS_Store
+Desktop/Senior Project/venv/
+Desktop/Senior Project/data/
+Desktop/Senior Project/__pycache__/
+Desktop/Senior Project/scripts/__pycache__/.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
