@@ -93,18 +93,7 @@ After SST extraction and QC:
 3. Train a Graph Auto‑Encoder (GAE) to reconstruct adjacency; score candidate missing edges and aggregate to rank bridge-vessel candidates.
 4. Validate using held-out synthetic experiments, manual case studies, and external event overlays (GFW, SAR).
 
-## Data provenance & licensing
 
-- Keep provenance columns for any SST fill (fields such as `sst_source`, `request_url`, `time_tolerance_days`). This allows downstream experiments to exclude or weight fallback-filled values.
-- Cite and follow license terms for datasets used (OceanBench, GLORYS, Copernicus, GFW) when publishing results.
-
-## Contributing and contact
-
-If you want to contribute code or data-handling improvements, open an issue or a PR. Include a short description and test data when possible. For questions or coordination, email or message the project owner (maintainer contact in repo metadata).
-
----
-
-If you want, I can (a) print the simulated WMTS plan (`data/sst_wmts_sample/plan_simulate.json`), (b) re-run the 5k pilot (confirm unauthenticated), or (c) add an ERDDAP fallback option for faster numeric responses.
 
 ---
 
