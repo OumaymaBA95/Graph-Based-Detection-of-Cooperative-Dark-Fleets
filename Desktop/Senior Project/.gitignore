@@ -13,3 +13,5 @@ artifacts/*.pkl
 artifacts/*.parquet
 artifacts/*.pt
 artifacts/*.bin
+
+artifacts/
