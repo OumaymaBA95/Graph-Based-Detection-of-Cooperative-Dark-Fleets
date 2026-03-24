@@ -1,0 +1,49 @@
+{
+  "edges": "artifacts/edges_2012_2019_cap5000_even30.parquet",
+  "years": [
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019
+  ],
+  "embedding_dim": 32,
+  "test_ratio": 0.3,
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "summary": {
+    "roc_auc_mean": 0.6279838656351252,
+    "roc_auc_std": 0.008713887449364738,
+    "average_precision_mean": 0.6787548937536547,
+    "average_precision_std": 0.01829244022431904
+  },
+  "per_seed": [
+    {
+      "seed": 1,
+      "metrics": {
+        "roc_auc": 0.6157508430866891,
+        "average_precision": 0.6575247454526335
+      }
+    },
+    {
+      "seed": 2,
+      "metrics": {
+        "roc_auc": 0.6353898036103948,
+        "average_precision": 0.6765683798629141
+      }
+    },
+    {
+      "seed": 3,
+      "metrics": {
+        "roc_auc": 0.6328109502082919,
+        "average_precision": 0.7021715559454168
+      }
+    }
+  ]
+}

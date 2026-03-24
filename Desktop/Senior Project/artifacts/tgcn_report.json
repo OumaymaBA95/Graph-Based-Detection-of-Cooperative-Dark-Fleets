@@ -1,0 +1,13 @@
+{
+  "edges_total": 1378,
+  "train_edges": 1307,
+  "test_pos": 8,
+  "test_neg": 8,
+  "embedding_dim": 32,
+  "epochs": 5,
+  "metrics": {
+    "roc_auc": 0.78125,
+    "average_precision": 0.8791666666666667
+  },
+  "cutoff_time_bucket": "2017-06-08 00:00:00"
+}

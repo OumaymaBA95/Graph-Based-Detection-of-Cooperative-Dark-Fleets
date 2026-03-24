@@ -1,0 +1,82 @@
+{
+  "edges": "artifacts/edges_2012_2019_cap5000_even30.parquet",
+  "embedding_dim": 32,
+  "test_ratio": 0.3,
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "use_features": false,
+  "features_years": "",
+  "summary": {
+    "roc_auc_mean": 0.9349401122126529,
+    "roc_auc_std": 0.006993025855881991,
+    "average_precision_mean": 0.9484280188146531,
+    "average_precision_std": 0.004113699682661054
+  },
+  "per_seed": [
+    {
+      "seed": 1,
+      "edges_total": 1378,
+      "train_edges": 965,
+      "test_pos": 413,
+      "test_neg": 413,
+      "embedding_dim": 32,
+      "metrics": {
+        "roc_auc": 0.9458400999009198,
+        "average_precision": 0.9538542890359828
+      }
+    },
+    {
+      "seed": 2,
+      "edges_total": 1378,
+      "train_edges": 965,
+      "test_pos": 413,
+      "test_neg": 413,
+      "embedding_dim": 32,
+      "metrics": {
+        "roc_auc": 0.928122929723455,
+        "average_precision": 0.9456918376192104
+      }
+    },
+    {
+      "seed": 3,
+      "edges_total": 1378,
+      "train_edges": 965,
+      "test_pos": 413,
+      "test_neg": 413,
+      "embedding_dim": 32,
+      "metrics": {
+        "roc_auc": 0.9300224542560489,
+        "average_precision": 0.944363606946743
+      }
+    },
+    {
+      "seed": 4,
+      "edges_total": 1378,
+      "train_edges": 965,
+      "test_pos": 413,
+      "test_neg": 413,
+      "embedding_dim": 32,
+      "metrics": {
+        "roc_auc": 0.9301279833967485,
+        "average_precision": 0.9452281695669515
+      }
+    },
+    {
+      "seed": 5,
+      "edges_total": 1378,
+      "train_edges": 965,
+      "test_pos": 413,
+      "test_neg": 413,
+      "embedding_dim": 32,
+      "metrics": {
+        "roc_auc": 0.9405870937860925,
+        "average_precision": 0.9530021909043782
+      }
+    }
+  ]
+}

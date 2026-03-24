@@ -1,0 +1,16 @@
+{
+  "years": [
+    2018,
+    2019
+  ],
+  "edges_total": 107,
+  "train_edges": 75,
+  "test_pos": 32,
+  "test_neg": 32,
+  "embedding_dim": 32,
+  "epochs": 50,
+  "metrics": {
+    "roc_auc": 0.787109375,
+    "average_precision": 0.8070073832616197
+  }
+}

@@ -1,0 +1,12 @@
+               precision    recall  f1-score   support
+
+   fixed_gear      0.838     0.907     0.871     40000
+pole_and_line      0.848     0.828     0.838     32263
+  purse_seine      0.835     0.853     0.844     39999
+      trawler      0.886     0.891     0.888     39999
+      troller      0.958     0.931     0.944     33249
+      unknown      0.915     0.853     0.883     40000
+
+     accuracy                          0.877    225510
+    macro avg      0.880     0.877     0.878    225510
+ weighted avg      0.879     0.877     0.877    225510

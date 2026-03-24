@@ -1,0 +1,81 @@
+import pandas as pd
+from pathlib import Path
+
+sst_dir = Path("data/sst_by_year")
+years = [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019]
+frames = []
+
+for year in years:
+    year_dir = sst_dir / str(year)
+    if not year_dir.exists():
+        continue
+    for file in year_dir.glob("*.parquet"):
+        df = pd.read_parquet(file)
+        frames.append(df)
+
+if not frames:
+    raise RuntimeError("No SST data found.")
+
+sst_all = pd.concat(frames, ignore_index=True)
+
+# Aggregate SST statistics per vessel
+sst_agg = sst_all.groupby("MMSI")["sst"].agg(
+    sst_mean="mean",
+    sst_std="std",
+    sst_min="min",
+    sst_max="max"
+).reset_index()
+
+sst_agg.to_parquet("data/sst_features_by_vessel.parquet", index=False)
+print("Aggregated SST features saved to data/sst_features_by_vessel.parquet")
+
+import pandas as pd
+from pathlib import Path
+
+sst_agg = pd.read_parquet("data/sst_features_by_vessel.parquet")
+features_dir = Path("data/features_by_year")
+years = [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019]
+
+for year in years:
+    feat_path = features_dir / f"{year}.parquet"
+    if not feat_path.exists():
+        continue
+    df = pd.read_parquet(feat_path)
+    df = df.merge(sst_agg, on="MMSI", how="left")
+    df.to_parquet(features_dir / f"{year}_with_sst.parquet", index=False)
+    print(f"Saved {year}_with_sst.parquet")
+
+timestamp,edges,test_ratio,seeds,common_neighbors_roc_auc_mean,common_neighbors_roc_auc_std,common_neighbors_average_precision_mean,common_neighbors_average_precision_std,jaccard_roc_auc_mean,jaccard_roc_auc_std,jaccard_average_precision_mean,jaccard_average_precision_std,adamic_adar_roc_auc_mean,adamic_adar_roc_auc_std,adamic_adar_average_precision_mean,adamic_adar_average_precision_std
+2026-02-17T13:02:36.856524Z,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,1;2;3;4;5,0.9136419865274462,0.005816050410694334,0.9387755658533263,0.006504539270356105,0.917171350010846,0.005539759351114351,0.9448036801234074,0.003815328858481924,0.9157889182676806,0.005601425936963595,0.9436869960715144,0.005254460222646463
+2026-02-17T13:02:41.333808Z,artifacts/edges_2012_2019_cap5000_rand30.parquet,0.3,1;2;3;4;5,0.9143538076606108,0.016816736426972904,0.9401788076546168,0.011715305310488746,0.9173889478725062,0.015258865556463797,0.9435664385934566,0.007660469483332322,0.9180809123239463,0.016064260903678743,0.9455132072683801,0.010654055797215286
+2026-02-17T13:04:06.948377Z,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,1;2,0.9184054546840281,0.0005774789088288101,0.9432985682414359,0.002662949548073612,0.9224712579659844,0.0022043864946150182,0.9480809447918501,0.0006113655316994371,0.9198916567488817,0.0036055789739050104,0.9465200194205576,0.004898960358221627
+2026-02-17T13:20:06.317377Z,linear_gae,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,1;2;3;4;5,32,False,,0.9349401122126529,0.006993025855881991,0.9484280188146531,0.004113699682661054
+2026-02-17T13:20:13.868456Z,linear_gae,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,1;2;3;4;5,32,True,"2012,2013,2014,2015,2016,2017,2018,2019",0.9348744496362176,0.007668828821434783,0.9484007473174326,0.004437693326922643
+2026-02-17T13:58:17.826259Z,gae_prototype,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,39,True,2018,0.7313019390581718,,0.7807490117135878,
+2026-02-17T13:58:17.826671Z,gae_prototype,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,39,True,2019,0.8480725623582765,,0.8951441574539951,
+2026-02-17T13:58:17.826831Z,gae_prototype,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,39,True,2018,2019,0.8515625,,0.9022739889082689,
+2026-02-17T14:07:37.839512Z,gae_prototype,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,39,True,2012,2013,2014,2015,2016,2017,2018,2019,0.9521132210425107,,0.9631483469341333,
+2026-02-17T14:11:58.184193Z,torch_gae,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,32,False,2018,2019,0.787109375,,0.8070073832616197,
+2026-02-17T15:59:53.254537Z,torch_gae,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,32,False,2012,2013,2014,2015,2016,2017,2018,2019,0.7321142763339177,,0.7460750737953765,
+2026-02-17T16:14:23.135396Z,torch_gae,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,1;2;3,32,False,"2012,2013,2014,2015,2016,2017,2018,2019",0.7210806184007645,0.02425666277269517,0.7303337317858851,0.02181320445709634
+2026-02-17T18:00:30.158342Z,linear_gae_time,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,32,False,,0.5040666534417775,0.0,0.610238240126808,0.0
+2026-02-17T18:00:38.662525Z,torch_gae_time,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,64,False,"2012,2013,2014,2015,2016,2017,2018,2019",0.5576274548700656,0.0,0.5725530671198118,0.0
+2026-02-17T18:15:20.660811Z,linear_gae_time_multiseed,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,1;2;3,32,False,,0.5801097665807048,0.020503483744759046,0.6312977566920089,0.012123165953592224
+2026-02-17T18:15:32.377466Z,torch_gae_time_multiseed,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,1;2;3,64,False,"2012,2013,2014,2015,2016,2017,2018,2019",0.5795146465648351,0.04067841357918705,0.6005006032817867,0.0667662650728308
+2026-02-17T18:19:42.193416Z,node2vec,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,64,False,"2012,2013,2014,2015,2016,2017,2018,2019",0.8518488119177577,0.0,0.8604801888694728,0.0
+2026-02-17T18:22:18.196482Z,node2vec_time,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,64,False,"2012,2013,2014,2015,2016,2017,2018,2019",0.1985717119619123,0.0,0.36393172742357127,0.0
+2026-02-17T18:28:37.894453Z,linear_gae_time,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,39,True,"2012,2013,2014,2015,2016,2017,2018,2019",0.5367982543146201,0.0,0.622117328716553,0.0
+2026-02-17T18:31:03.681952Z,linear_gae_time,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,39,True,"2012,2013,2014,2015,2016,2017,2018,2019",0.5685379884943464,0.0,0.6347064724887238,0.0
+2026-02-17T18:33:21.920691Z,linear_gae_time,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,36,True,temporal,0.6302320968061892,0.0,0.6862045991761994,0.0
+2026-02-17T18:34:57.258837Z,linear_gae_time_combined_multiseed,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,1;2;3,43,True,sst+temporal,0.6279838656351252,0.008713887449364738,0.6787548937536547,0.01829244022431904
+2026-02-17T18:37:39.301882Z,linear_gae_time_temporal_multiseed,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,1;2;3,36,True,temporal,0.6279838656351252,0.008713887449364738,0.6787548937536547,0.01829244022431904
+2026-02-17T20:20:07.903952Z,edge_temporal,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,0,True,edge_temporal,0.5,0.0,0.5,0.0
+2026-02-17T20:26:58.927683Z,tgn_lite,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,32,True,tgn_lite,0.0,0.0,0.0,0.0
+2026-02-17T20:28:53.631648Z,tgn_lite,artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,32,True,tgn_lite,0.3318785955167625,0.0,0.4620860531479798,0.0
+2026-02-18T01:51:47.216174Z,tgcn,/Users/momoba/Desktop/Senior Project/artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,42,32,True,tgcn,0.78125,0.0,0.8791666666666667,0.0
+2026-02-18T01:58:31.264947Z,tgcn_time_multiseed,/Users/momoba/Desktop/Senior Project/artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,1;2;3,32,True,tgcn_time,0.51175,0.2282494067170092,0.710989010989011,0.116453485480026
+2026-02-18T02:06:41.532086Z,gconvgru_time_multiseed,/Users/momoba/Desktop/Senior Project/artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,1;2;3,32,True,gconvgru_time,0.41441666666666666,0.12481992584875579,0.6639087301587302,0.053996333245390445
+2026-02-18T02:14:40.667394Z,gconvlstm_time_multiseed,/Users/momoba/Desktop/Senior Project/artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,1;2;3,32,True,gconvlstm_time,0.47766666666666663,0.006548960901462794,0.7019100529100529,0.01623776206857354
+2026-02-18T02:31:21.496409Z,tgcn_time_multiseed,/Users/momoba/Desktop/Senior Project/artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,1;2;3,32,True,tgcn_time+temporal_node,0.7840000000000001,0.12454717981552209,0.8781746031746032,0.06843138624440401
+2026-02-18T02:54:03.662235Z,tgcn_time_multiseed,/Users/momoba/Desktop/Senior Project/artifacts/edges_2012_2019_cap5000_even30.parquet,0.3,1;2;3,32,True,tgcn_time+temporal_node,0.8832195304425624,0.06296137186924418,0.9214496206771222,0.047895155509585105
+2026-02-18T11:32:32.959372Z,tgcn_time_multiseed,/Users/momoba/Desktop/Senior Project/artifacts/edges_2012_2019_full.parquet,0.3,1;2;3,32,True,tgcn_time+temporal_node,0.6786916343773299,0.12286416682214084,0.6954778674873502,0.12727074119827372

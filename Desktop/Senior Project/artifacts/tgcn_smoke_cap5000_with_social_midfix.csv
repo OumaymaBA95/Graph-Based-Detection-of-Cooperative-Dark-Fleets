@@ -1,0 +1,2 @@
+roc_auc_mean,roc_auc_std,average_precision_mean,average_precision_std,seeds,cv_folds,buckets_evaluated
+0.9701997041420118,0.0,0.980521864353595,0.0,1,0,50

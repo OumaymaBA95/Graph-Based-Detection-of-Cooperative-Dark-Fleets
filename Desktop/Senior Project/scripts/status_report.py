@@ -14,6 +14,7 @@ import pandas as pd
 import numpy as np
 import random
 import math
+from typing import Optional
 
 
 def reservoir_sample_iter(it, k, rng=random.Random()):
@@ -31,8 +32,10 @@ def reservoir_sample_iter(it, k, rng=random.Random()):
     return sample
 
 
-def process_year(year_dir, sample_size=1000000):
+def process_year(year_dir, sample_size=1000000, max_files_per_year: int = 0):
     files = sorted(Path(year_dir).glob('chunk_*.parquet'))
+    if max_files_per_year and max_files_per_year > 0:
+        files = files[:max_files_per_year]
     if not files:
         return None
     total = 0
@@ -49,12 +52,17 @@ def process_year(year_dir, sample_size=1000000):
     for fp in files:
         try:
             df = pd.read_parquet(fp, columns=['sst','sst_missing'])
-        except Exception:
-            # try reading with pyarrow via pandas default
-            df = pd.read_parquet(fp)
-            if 'sst' not in df.columns:
+        except Exception as e:
+            try:
+                # try reading with pyarrow via pandas default
+                df = pd.read_parquet(fp)
+                if 'sst' not in df.columns:
+                    continue
+                keep_cols = [c for c in ['sst','sst_missing'] if c in df.columns]
+                df = df[keep_cols]
+            except Exception as e2:
+                print(f"    skip file {fp.name}: {e2}")
                 continue
-            df = df[['sst','sst_missing']]
         vals = df['sst'].values
         miss_flag = None
         if 'sst_missing' in df.columns:
@@ -117,12 +125,17 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('--root', default='data/sst_by_year')
     p.add_argument('--sample-size', type=int, default=200000)
+    p.add_argument('--years', help='Comma-separated years to include (e.g., 2018,2019)', default=None)
+    p.add_argument('--max-files-per-year', type=int, default=0, help='Optional cap on number of chunk files per year')
     args = p.parse_args()
     root = Path(args.root)
     if not root.exists():
         print('Root path not found:', root)
         return
     years = sorted([p for p in root.iterdir() if p.is_dir()])
+    if args.years:
+        allow = set([y.strip() for y in args.years.split(',') if y.strip()])
+        years = [p for p in years if p.name in allow]
     overall = {
         'files': 0,
         'total': 0,
@@ -131,7 +144,7 @@ def main():
     }
     print('Scanning', len(years), 'year directories under', root)
     for y in years:
-        res = process_year(y, sample_size=args.sample_size)
+        res = process_year(y, sample_size=args.sample_size, max_files_per_year=args.max_files_per_year)
         if res is None:
             print(y.name, 'no parquet chunk files found')
             continue

@@ -20,3 +20,14 @@ Desktop/Senior Project/**/__pycache__/
 .Rhistory
 .RData
 .Ruserdata
+
+# Senior Project generated artifacts (keep small tables, ignore bulky plots/caches)
+Desktop/Senior Project/artifacts/plots/
+Desktop/Senior Project/artifacts/**/*.png
+Desktop/Senior Project/artifacts/**/*.jpg
+Desktop/Senior Project/artifacts/**/*.jpeg
+Desktop/Senior Project/artifacts/**/*.gif
+
+# Accidental/invalid filenames
+Desktop/Senior Project/bin:env python3.py
+Desktop/Senior Project/scripts/cripts:join_sst_to_features.py.py

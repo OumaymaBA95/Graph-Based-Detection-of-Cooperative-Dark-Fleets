@@ -1,0 +1,12 @@
+{
+  "edges_total": 1378,
+  "train_edges": 965,
+  "test_pos": 413,
+  "test_neg": 413,
+  "embedding_dim": 39,
+  "use_features": true,
+  "metrics": {
+    "roc_auc": 0.9524473966547263,
+    "average_precision": 0.9632957186241685
+  }
+}

@@ -1,0 +1,2 @@
+src,dst,overlap_days,days_within_km,mean_distance_km,src_days_active,dst_days_active,overlap_ratio_days,close_ratio_days,files_used
+412000690,412325200,774,102,135.14586891539665,734,444,1.7432432432432432,0.22972972972972974,2922

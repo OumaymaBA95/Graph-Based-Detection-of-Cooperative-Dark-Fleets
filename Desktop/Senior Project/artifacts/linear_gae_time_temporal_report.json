@@ -1,0 +1,23 @@
+{
+  "edges_total": 1378,
+  "train_edges": 1307,
+  "test_pos": 71,
+  "test_neg": 71,
+  "embedding_dim": 36,
+  "use_features": true,
+  "years": [
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019
+  ],
+  "cutoff_time_bucket": "2017-06-08 00:00:00",
+  "metrics": {
+    "roc_auc": 0.6302320968061892,
+    "average_precision": 0.6862045991761994
+  }
+}

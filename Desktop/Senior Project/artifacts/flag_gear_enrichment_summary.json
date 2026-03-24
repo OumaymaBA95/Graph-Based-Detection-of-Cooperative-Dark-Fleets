@@ -1,0 +1,43 @@
+{
+  "n_rows": 94,
+  "columns": [
+    "src",
+    "dst",
+    "bucket",
+    "label",
+    "score",
+    "src_mid",
+    "dst_mid",
+    "src_flag_cell",
+    "dst_flag_cell",
+    "src_gear",
+    "dst_gear"
+  ],
+  "mid_same_count": 32,
+  "mid_cross_count": 62,
+  "mid_same_pct": 34.0,
+  "gear_both_present": 46,
+  "gear_either_missing": 48,
+  "same_gear_count": 61,
+  "same_gear_both_nonmissing": 28,
+  "label_0_mid_same": 10,
+  "label_1_mid_same": 22,
+  "flag_cell_both_present": 46,
+  "gear_pair_counts": {
+    "(missing) \u2192 (missing)": 33,
+    "trawlers \u2192 trawlers": 18,
+    "trawlers \u2192 fishing": 6,
+    "fishing \u2192 fishing": 5,
+    "fishing \u2192 (missing)": 5,
+    "(missing) \u2192 trawlers": 3,
+    "set_gillnets \u2192 set_gillnets": 3,
+    "set_longlines \u2192 (missing)": 2,
+    "(missing) \u2192 fishing": 2,
+    "trawlers \u2192 set_longlines": 2,
+    "fishing \u2192 set_gillnets": 2,
+    "set_longlines \u2192 trawlers": 1,
+    "fixed_gear \u2192 set_gillnets": 1,
+    "fixed_gear \u2192 fishing": 1,
+    "set_longlines \u2192 fishing": 1
+  }
+}

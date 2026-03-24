@@ -1,0 +1,138 @@
+{
+  "edges_total": 1226,
+  "test_ratio": 0.3,
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "per_seed": [
+    {
+      "seed": 1,
+      "edges_total": 1226,
+      "train_edges": 859,
+      "test_pos": 367,
+      "test_neg": 367,
+      "metrics": {
+        "common_neighbors": {
+          "roc_auc": 0.9419180482444742,
+          "average_precision": 0.9583990900961049
+        },
+        "jaccard": {
+          "roc_auc": 0.9408414941086503,
+          "average_precision": 0.9506518781953288
+        },
+        "adamic_adar": {
+          "roc_auc": 0.943863270200239,
+          "average_precision": 0.9617666028605493
+        }
+      }
+    },
+    {
+      "seed": 2,
+      "edges_total": 1226,
+      "train_edges": 859,
+      "test_pos": 367,
+      "test_neg": 367,
+      "metrics": {
+        "common_neighbors": {
+          "roc_auc": 0.9259404999665897,
+          "average_precision": 0.9497147711488325
+        },
+        "jaccard": {
+          "roc_auc": 0.9298383683894007,
+          "average_precision": 0.9548969394001032
+        },
+        "adamic_adar": {
+          "roc_auc": 0.9297270007201774,
+          "average_precision": 0.9547858105300924
+        }
+      }
+    },
+    {
+      "seed": 3,
+      "edges_total": 1226,
+      "train_edges": 859,
+      "test_pos": 367,
+      "test_neg": 367,
+      "metrics": {
+        "common_neighbors": {
+          "roc_auc": 0.903013609129179,
+          "average_precision": 0.929647853330343
+        },
+        "jaccard": {
+          "roc_auc": 0.908463200409833,
+          "average_precision": 0.9379275150603572
+        },
+        "adamic_adar": {
+          "roc_auc": 0.9080919748457558,
+          "average_precision": 0.93730444919
+        }
+      }
+    },
+    {
+      "seed": 4,
+      "edges_total": 1226,
+      "train_edges": 859,
+      "test_pos": 367,
+      "test_neg": 367,
+      "metrics": {
+        "common_neighbors": {
+          "roc_auc": 0.9019741775497628,
+          "average_precision": 0.9301392305173574
+        },
+        "jaccard": {
+          "roc_auc": 0.9066961667248253,
+          "average_precision": 0.9380165963332585
+        },
+        "adamic_adar": {
+          "roc_auc": 0.906978298153524,
+          "average_precision": 0.9366765954503458
+        }
+      }
+    },
+    {
+      "seed": 5,
+      "edges_total": 1226,
+      "train_edges": 859,
+      "test_pos": 367,
+      "test_neg": 367,
+      "metrics": {
+        "common_neighbors": {
+          "roc_auc": 0.8989227034130479,
+          "average_precision": 0.9329930931804471
+        },
+        "jaccard": {
+          "roc_auc": 0.9011055097298221,
+          "average_precision": 0.9363392639782347
+        },
+        "adamic_adar": {
+          "roc_auc": 0.9017440177000349,
+          "average_precision": 0.9370325783109131
+        }
+      }
+    }
+  ],
+  "summary": {
+    "common_neighbors": {
+      "roc_auc_mean": 0.9143538076606108,
+      "roc_auc_std": 0.016816736426972904,
+      "average_precision_mean": 0.9401788076546168,
+      "average_precision_std": 0.011715305310488746
+    },
+    "jaccard": {
+      "roc_auc_mean": 0.9173889478725062,
+      "roc_auc_std": 0.015258865556463797,
+      "average_precision_mean": 0.9435664385934566,
+      "average_precision_std": 0.007660469483332322
+    },
+    "adamic_adar": {
+      "roc_auc_mean": 0.9180809123239463,
+      "roc_auc_std": 0.016064260903678743,
+      "average_precision_mean": 0.9455132072683801,
+      "average_precision_std": 0.010654055797215286
+    }
+  }
+}

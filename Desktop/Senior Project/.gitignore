@@ -1,0 +1,15 @@
+.venv/
+
+# Large local data and model artifacts
+Anonymized AIS training data/
+artifacts/*.joblib
+artifacts/*.pkl
+artifacts/*.parquet
+artifacts/*.pt
+artifacts/*.bin
+Anonymized AIS training data/
+artifacts/*.joblib
+artifacts/*.pkl
+artifacts/*.parquet
+artifacts/*.pt
+artifacts/*.bin

@@ -1,0 +1,20 @@
+{
+  "edges_total": 1266,
+  "train_edges": 887,
+  "test_pos": 379,
+  "test_neg": 379,
+  "metrics": {
+    "common_neighbors": {
+      "roc_auc": 0.9013512854964807,
+      "average_precision": 0.9346127967698318
+    },
+    "jaccard": {
+      "roc_auc": 0.9059878446961521,
+      "average_precision": 0.9395879366672409
+    },
+    "adamic_adar": {
+      "roc_auc": 0.9094408977938053,
+      "average_precision": 0.9431859818312278
+    }
+  }
+}

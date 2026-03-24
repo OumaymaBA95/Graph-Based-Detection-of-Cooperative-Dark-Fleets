@@ -1,0 +1,94 @@
+{
+  "edges_total": 811,
+  "test_ratio": 0.3,
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "per_seed": [
+    {
+      "seed": 1,
+      "edges_total": 811,
+      "train_edges": 568,
+      "test_pos": 243,
+      "test_neg": 243,
+      "metrics": {
+        "common_neighbors": {
+          "roc_auc": 0.9308032312147538,
+          "average_precision": 0.9543763834783446
+        },
+        "jaccard": {
+          "roc_auc": 0.9316330505173669,
+          "average_precision": 0.9541370963955345
+        },
+        "adamic_adar": {
+          "roc_auc": 0.9355450558011144,
+          "average_precision": 0.9599677333010458
+        }
+      }
+    },
+    {
+      "seed": 2,
+      "edges_total": 811,
+      "train_edges": 568,
+      "test_pos": 243,
+      "test_neg": 243,
+      "metrics": {
+        "common_neighbors": {
+          "roc_auc": 0.8892445257328658,
+          "average_precision": 0.9248033046158637
+        },
+        "jaccard": {
+          "roc_auc": 0.8898711239817777,
+          "average_precision": 0.9252409174824321
+        },
+        "adamic_adar": {
+          "roc_auc": 0.8958492099781536,
+          "average_precision": 0.9319445776432578
+        }
+      }
+    },
+    {
+      "seed": 3,
+      "edges_total": 811,
+      "train_edges": 568,
+      "test_pos": 243,
+      "test_neg": 243,
+      "metrics": {
+        "common_neighbors": {
+          "roc_auc": 0.9038764415993497,
+          "average_precision": 0.9385977924935608
+        },
+        "jaccard": {
+          "roc_auc": 0.9046046503751122,
+          "average_precision": 0.9395868954401557
+        },
+        "adamic_adar": {
+          "roc_auc": 0.9037917661603074,
+          "average_precision": 0.9399022536597907
+        }
+      }
+    }
+  ],
+  "summary": {
+    "common_neighbors": {
+      "roc_auc_mean": 0.9079747328489898,
+      "roc_auc_std": 0.017211982138571075,
+      "average_precision_mean": 0.939259160195923,
+      "average_precision_std": 0.012082212925893041
+    },
+    "jaccard": {
+      "roc_auc_mean": 0.9087029416247523,
+      "roc_auc_std": 0.017293768056078167,
+      "average_precision_mean": 0.9396549697727075,
+      "average_precision_std": 0.011796913848702684
+    },
+    "adamic_adar": {
+      "roc_auc_mean": 0.9117286773131917,
+      "roc_auc_std": 0.017150043010376623,
+      "average_precision_mean": 0.9439381882013649,
+      "average_precision_std": 0.011790982118355163
+    }
+  }
+}

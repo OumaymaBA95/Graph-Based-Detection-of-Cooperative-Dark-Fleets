@@ -1,0 +1,2 @@
+config,embedding_dim,epochs,lr,cheb_k,use_hard_negatives,roc_auc_mean,roc_auc_std,average_precision_mean,average_precision_std
+emb16_ep5_lr0.01_cheb2,16,5,0.01,2,False,0.9691356528722602,0.0380228098997697,0.9725577676291962,0.03502309435285076

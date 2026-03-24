@@ -1,0 +1,16 @@
+{
+  "results": [
+    {
+      "config": "emb16_ep5_lr0.01_cheb2",
+      "embedding_dim": 16,
+      "epochs": 5,
+      "lr": 0.01,
+      "cheb_k": 2,
+      "use_hard_negatives": false,
+      "roc_auc_mean": 0.9691356528722602,
+      "roc_auc_std": 0.0380228098997697,
+      "average_precision_mean": 0.9725577676291962,
+      "average_precision_std": 0.03502309435285076
+    }
+  ]
+}

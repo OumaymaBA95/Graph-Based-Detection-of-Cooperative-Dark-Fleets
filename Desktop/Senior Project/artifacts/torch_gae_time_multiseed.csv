@@ -1,0 +1,2 @@
+roc_auc_mean,roc_auc_std,average_precision_mean,average_precision_std
+0.5795146465648351,0.04067841357918705,0.6005006032817867,0.0667662650728308

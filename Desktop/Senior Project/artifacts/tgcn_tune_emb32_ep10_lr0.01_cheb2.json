@@ -1,0 +1,494 @@
+{
+  "edges": "artifacts/edges_2012_2019_cap5000_even30.parquet",
+  "years": [
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019
+  ],
+  "embedding_dim": 32,
+  "epochs": 10,
+  "lr": 0.01,
+  "cheb_k": 2,
+  "use_temporal_node_features": true,
+  "use_vessel_day_features": false,
+  "feature_cols": "",
+  "in_channels": 5,
+  "test_ratio": 0.3,
+  "cutoff_time_bucket": "2017-06-08 00:00:00",
+  "model": "tgcn",
+  "overall": {
+    "roc_auc_mean": 0.856281391723356,
+    "roc_auc_std": 0.1924959364519778,
+    "average_precision_mean": 0.910986471861472,
+    "average_precision_std": 0.1190865960945566,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "buckets_evaluated": 20
+  },
+  "per_seed": [
+    {
+      "seed": 1,
+      "summary": {
+        "roc_auc_mean": 0.996875,
+        "roc_auc_std": 0.013621559198564604,
+        "average_precision_mean": 0.9979166666666666,
+        "average_precision_std": 0.009081039465709753,
+        "buckets_evaluated": 20
+      },
+      "buckets": [
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-06-08 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-06-20 00:00:00",
+          "pos_edges": 2,
+          "neg_edges": 2
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-07-14 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-07-26 00:00:00",
+          "pos_edges": 5,
+          "neg_edges": 5
+        },
+        {
+          "roc_auc": 0.9375,
+          "average_precision": 0.9583333333333333,
+          "bucket": "2017-08-07 00:00:00",
+          "pos_edges": 8,
+          "neg_edges": 8
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-08-20 00:00:00",
+          "pos_edges": 4,
+          "neg_edges": 4
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-10-07 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-10-19 00:00:00",
+          "pos_edges": 3,
+          "neg_edges": 3
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-10-31 00:00:00",
+          "pos_edges": 3,
+          "neg_edges": 3
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-11-25 00:00:00",
+          "pos_edges": 2,
+          "neg_edges": 2
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-12-07 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-12-19 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-01-01 00:00:00",
+          "pos_edges": 3,
+          "neg_edges": 3
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-01-25 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-02-19 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-03-03 00:00:00",
+          "pos_edges": 3,
+          "neg_edges": 3
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-03-15 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-05-14 00:00:00",
+          "pos_edges": 4,
+          "neg_edges": 4
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-05-27 00:00:00",
+          "pos_edges": 7,
+          "neg_edges": 7
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-06-08 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "summary": {
+        "roc_auc_mean": 0.9878684807256237,
+        "roc_auc_std": 0.04840234187472481,
+        "average_precision_mean": 0.9924404761904763,
+        "average_precision_std": 0.02911505394487792,
+        "buckets_evaluated": 20
+      },
+      "buckets": [
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-06-08 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-06-20 00:00:00",
+          "pos_edges": 2,
+          "neg_edges": 2
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-07-14 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-07-26 00:00:00",
+          "pos_edges": 5,
+          "neg_edges": 5
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-08-07 00:00:00",
+          "pos_edges": 8,
+          "neg_edges": 8
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-08-20 00:00:00",
+          "pos_edges": 4,
+          "neg_edges": 4
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-10-07 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-10-19 00:00:00",
+          "pos_edges": 3,
+          "neg_edges": 3
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-10-31 00:00:00",
+          "pos_edges": 3,
+          "neg_edges": 3
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-11-25 00:00:00",
+          "pos_edges": 2,
+          "neg_edges": 2
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-12-07 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-12-19 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 0.7777777777777778,
+          "average_precision": 0.8666666666666667,
+          "bucket": "2018-01-01 00:00:00",
+          "pos_edges": 3,
+          "neg_edges": 3
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-01-25 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-02-19 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-03-03 00:00:00",
+          "pos_edges": 3,
+          "neg_edges": 3
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-03-15 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-05-14 00:00:00",
+          "pos_edges": 4,
+          "neg_edges": 4
+        },
+        {
+          "roc_auc": 0.9795918367346939,
+          "average_precision": 0.9821428571428571,
+          "bucket": "2018-05-27 00:00:00",
+          "pos_edges": 7,
+          "neg_edges": 7
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-06-08 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "summary": {
+        "roc_auc_mean": 0.5841006944444445,
+        "roc_auc_std": 0.40887494755810644,
+        "average_precision_mean": 0.7426022727272727,
+        "average_precision_std": 0.20874320004769967,
+        "buckets_evaluated": 20
+      },
+      "buckets": [
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-06-08 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 0.5,
+          "average_precision": 0.5833333333333333,
+          "bucket": "2017-06-20 00:00:00",
+          "pos_edges": 2,
+          "neg_edges": 2
+        },
+        {
+          "roc_auc": 0.0,
+          "average_precision": 0.5,
+          "bucket": "2017-07-14 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 0.8400000000000001,
+          "average_precision": 0.8099999999999999,
+          "bucket": "2017-07-26 00:00:00",
+          "pos_edges": 5,
+          "neg_edges": 5
+        },
+        {
+          "roc_auc": 0.828125,
+          "average_precision": 0.8712121212121211,
+          "bucket": "2017-08-07 00:00:00",
+          "pos_edges": 8,
+          "neg_edges": 8
+        },
+        {
+          "roc_auc": 0.875,
+          "average_precision": 0.8875,
+          "bucket": "2017-08-20 00:00:00",
+          "pos_edges": 4,
+          "neg_edges": 4
+        },
+        {
+          "roc_auc": 0.0,
+          "average_precision": 0.5,
+          "bucket": "2017-10-07 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 0.5555555555555556,
+          "average_precision": 0.5888888888888889,
+          "bucket": "2017-10-19 00:00:00",
+          "pos_edges": 3,
+          "neg_edges": 3
+        },
+        {
+          "roc_auc": 0.6666666666666667,
+          "average_precision": 0.6388888888888888,
+          "bucket": "2017-10-31 00:00:00",
+          "pos_edges": 3,
+          "neg_edges": 3
+        },
+        {
+          "roc_auc": 0.75,
+          "average_precision": 0.8333333333333333,
+          "bucket": "2017-11-25 00:00:00",
+          "pos_edges": 2,
+          "neg_edges": 2
+        },
+        {
+          "roc_auc": 0.0,
+          "average_precision": 0.5,
+          "bucket": "2017-12-07 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 0.0,
+          "average_precision": 0.5,
+          "bucket": "2017-12-19 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 0.6666666666666667,
+          "average_precision": 0.6388888888888888,
+          "bucket": "2018-01-01 00:00:00",
+          "pos_edges": 3,
+          "neg_edges": 3
+        },
+        {
+          "roc_auc": 0.0,
+          "average_precision": 0.5,
+          "bucket": "2018-01-25 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 0.0,
+          "average_precision": 0.5,
+          "bucket": "2018-02-19 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-03-03 00:00:00",
+          "pos_edges": 3,
+          "neg_edges": 3
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-03-15 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-05-14 00:00:00",
+          "pos_edges": 4,
+          "neg_edges": 4
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-05-27 00:00:00",
+          "pos_edges": 7,
+          "neg_edges": 7
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2018-06-08 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        }
+      ]
+    }
+  ]
+}

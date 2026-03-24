@@ -1,0 +1,69 @@
+{
+  "edges": "artifacts/edges_2012_2019_cap5000_even30.parquet",
+  "years": [
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019
+  ],
+  "embedding_dim": 32,
+  "epochs": 50,
+  "lr": 0.05,
+  "test_ratio": 0.3,
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "summary": {
+    "roc_auc_mean": 0.7210806184007645,
+    "roc_auc_std": 0.02425666277269517,
+    "average_precision_mean": 0.7303337317858851,
+    "average_precision_std": 0.02181320445709634
+  },
+  "per_seed": [
+    {
+      "seed": 1,
+      "edges_total": 1378,
+      "train_edges": 965,
+      "test_pos": 413,
+      "test_neg": 413,
+      "embedding_dim": 32,
+      "epochs": 50,
+      "metrics": {
+        "roc_auc": 0.7299626544096525,
+        "average_precision": 0.7343779813760575
+      }
+    },
+    {
+      "seed": 2,
+      "edges_total": 1378,
+      "train_edges": 965,
+      "test_pos": 413,
+      "test_neg": 413,
+      "embedding_dim": 32,
+      "epochs": 50,
+      "metrics": {
+        "roc_auc": 0.7453347325715693,
+        "average_precision": 0.7547966379888915
+      }
+    },
+    {
+      "seed": 3,
+      "edges_total": 1378,
+      "train_edges": 965,
+      "test_pos": 413,
+      "test_neg": 413,
+      "embedding_dim": 32,
+      "epochs": 50,
+      "metrics": {
+        "roc_auc": 0.6879444682210718,
+        "average_precision": 0.7018265759927064
+      }
+    }
+  ]
+}

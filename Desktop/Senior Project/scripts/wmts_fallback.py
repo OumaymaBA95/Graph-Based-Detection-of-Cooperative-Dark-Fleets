@@ -178,11 +178,21 @@ def main():
                 if got >= quota:
                     break
                 try:
-                    df = pd.read_parquet(fpath, columns=['latitude', 'longitude', 'time', 'sst'])
+                    df = pd.read_parquet(fpath, columns=['latitude', 'longitude', 'time', 'sst', 'sst_missing'])
                 except Exception:
+                    try:
+                        df = pd.read_parquet(fpath)
+                    except Exception:
+                        continue
+                required_cols = ['latitude', 'longitude', 'time', 'sst']
+                if not all(c in df.columns for c in required_cols):
                     continue
-                # select rows where sst is null
-                mdf = df[df['sst'].isnull()]
+                # select rows marked missing either by flag or NaN
+                if 'sst_missing' in df.columns:
+                    is_missing = df['sst_missing'].astype(bool)
+                else:
+                    is_missing = df['sst'].isnull()
+                mdf = df[is_missing]
                 if mdf.empty:
                     continue
                 take = mdf.sample(min(len(mdf), quota - got))

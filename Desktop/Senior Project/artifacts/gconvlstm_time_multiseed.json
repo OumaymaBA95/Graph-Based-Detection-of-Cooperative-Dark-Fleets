@@ -1,0 +1,175 @@
+{
+  "edges": "/Users/momoba/Desktop/Senior Project/artifacts/edges_2012_2019_cap5000_even30.parquet",
+  "years": [
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019
+  ],
+  "embedding_dim": 32,
+  "epochs": 5,
+  "lr": 0.01,
+  "cheb_k": 2,
+  "test_ratio": 0.3,
+  "cutoff_time_bucket": "2017-06-08 00:00:00",
+  "model": "gconvlstm",
+  "overall": {
+    "roc_auc_mean": 0.47766666666666663,
+    "roc_auc_std": 0.006548960901462794,
+    "average_precision_mean": 0.7019100529100529,
+    "average_precision_std": 0.01623776206857354,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "buckets_evaluated": 5
+  },
+  "per_seed": [
+    {
+      "seed": 1,
+      "summary": {
+        "roc_auc_mean": 0.48599999999999993,
+        "roc_auc_std": 0.41083329952670583,
+        "average_precision_mean": 0.7197222222222223,
+        "average_precision_std": 0.22354536645655965,
+        "buckets_evaluated": 5
+      },
+      "buckets": [
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-06-08 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 0.0,
+          "average_precision": 0.41666666666666663,
+          "bucket": "2017-06-20 00:00:00",
+          "pos_edges": 2,
+          "neg_edges": 2
+        },
+        {
+          "roc_auc": 0.0,
+          "average_precision": 0.5,
+          "bucket": "2017-07-14 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 0.6799999999999999,
+          "average_precision": 0.8111111111111111,
+          "bucket": "2017-07-26 00:00:00",
+          "pos_edges": 5,
+          "neg_edges": 5
+        },
+        {
+          "roc_auc": 0.75,
+          "average_precision": 0.8708333333333333,
+          "bucket": "2017-08-07 00:00:00",
+          "pos_edges": 8,
+          "neg_edges": 8
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "summary": {
+        "roc_auc_mean": 0.477,
+        "roc_auc_std": 0.40757330628980104,
+        "average_precision_mean": 0.6804523809523809,
+        "average_precision_std": 0.20901638230665642,
+        "buckets_evaluated": 5
+      },
+      "buckets": [
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-06-08 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 0.0,
+          "average_precision": 0.41666666666666663,
+          "bucket": "2017-06-20 00:00:00",
+          "pos_edges": 2,
+          "neg_edges": 2
+        },
+        {
+          "roc_auc": 0.0,
+          "average_precision": 0.5,
+          "bucket": "2017-07-14 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 0.76,
+          "average_precision": 0.6861904761904761,
+          "bucket": "2017-07-26 00:00:00",
+          "pos_edges": 5,
+          "neg_edges": 5
+        },
+        {
+          "roc_auc": 0.625,
+          "average_precision": 0.799404761904762,
+          "bucket": "2017-08-07 00:00:00",
+          "pos_edges": 8,
+          "neg_edges": 8
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "summary": {
+        "roc_auc_mean": 0.47000000000000003,
+        "roc_auc_std": 0.40447496832313373,
+        "average_precision_mean": 0.7055555555555555,
+        "average_precision_std": 0.19372884193514103,
+        "buckets_evaluated": 5
+      },
+      "buckets": [
+        {
+          "roc_auc": 0.0,
+          "average_precision": 0.5,
+          "bucket": "2017-06-08 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 0.75,
+          "average_precision": 0.8333333333333333,
+          "bucket": "2017-06-20 00:00:00",
+          "pos_edges": 2,
+          "neg_edges": 2
+        },
+        {
+          "roc_auc": 0.0,
+          "average_precision": 0.5,
+          "bucket": "2017-07-14 00:00:00",
+          "pos_edges": 1,
+          "neg_edges": 1
+        },
+        {
+          "roc_auc": 0.6,
+          "average_precision": 0.6944444444444444,
+          "bucket": "2017-07-26 00:00:00",
+          "pos_edges": 5,
+          "neg_edges": 5
+        },
+        {
+          "roc_auc": 1.0,
+          "average_precision": 1.0,
+          "bucket": "2017-08-07 00:00:00",
+          "pos_edges": 8,
+          "neg_edges": 8
+        }
+      ]
+    }
+  ]
+}
