@@ -13,7 +13,6 @@ import numpy as np
 import pandas as pd
 import torch
 from torch_geometric.utils import degree
-from torch_geometric_temporal.nn.recurrent import TGCN
 
 from build_temporal_node_features import build_temporal_node_features
 import run_tgcn_link_pred as tgcn_utils
@@ -53,11 +52,13 @@ def train_tgcn(
     lr: float,
     seed: int,
     static_features: torch.Tensor | None,
-) -> TGCN:
+) -> torch.nn.Module:
+    from temporal_graph_baselines import TGCNPure
+
     torch.manual_seed(seed)
     np.random.seed(seed)
 
-    model = TGCN(in_channels=in_channels, out_channels=embedding_dim)
+    model = TGCNPure(in_channels=in_channels, out_channels=embedding_dim)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     loss_fn = torch.nn.BCEWithLogitsLoss()
 
@@ -98,7 +99,7 @@ def train_tgcn(
 
 
 def rollout_hidden(
-    model: TGCN,
+    model: torch.nn.Module,
     nodes: List[int],
     node_to_idx: Dict[int, int],
     snapshots: Dict[pd.Timestamp, List[Tuple[int, int]]],

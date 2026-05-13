@@ -1,0 +1,122 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Problem.}{1}{section*.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{What this work does.}{1}{section*.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{What this work does not do.}{1}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Contributions.}{1}{section*.4}\protected@file@percent }
+\citation{kroodsma2018tracking}
+\citation{miller2018identifying}
+\citation{park2020systematic}
+\citation{kipf2017semi}
+\citation{hamilton2017inductive}
+\citation{lu2011link}
+\citation{yu2018spatio}
+\citation{rossi2020temporal}
+\@writefile{toc}{\contentsline {paragraph}{Roadmap.}{2}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Background and Related Work}{2}{section.2}\protected@file@percent }
+\newlabel{sec:background}{{2}{2}{Background and Related Work}{section.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Fisheries monitoring and AIS.}{2}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{AIS-based fisheries and encounter analytics.}{2}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Graph learning and link prediction.}{2}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Evaluation philosophy.}{2}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Methods}{2}{section.3}\protected@file@percent }
+\newlabel{sec:methods}{{3}{2}{Methods}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Problem Formulation}{2}{subsection.3.1}\protected@file@percent }
+\newlabel{sec:formulation}{{3.1}{2}{Problem Formulation}{subsection.3.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Data and Time Buckets}{3}{subsection.3.2}\protected@file@percent }
+\newlabel{sec:data}{{3.2}{3}{Data and Time Buckets}{subsection.3.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Graph Construction}{3}{subsection.3.3}\protected@file@percent }
+\newlabel{sec:graph}{{3.3}{3}{Graph Construction}{subsection.3.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Validation distances (not training edges).}{3}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Model and Training Objective}{3}{subsection.3.4}\protected@file@percent }
+\newlabel{sec:model}{{3.4}{3}{Model and Training Objective}{subsection.3.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Architecture.}{3}{section*.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Training details.}{3}{section*.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Evaluation.}{3}{section*.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Computational cost.}{3}{section*.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Heuristic Validation (Not Supervised Labels)}{3}{subsection.3.5}\protected@file@percent }
+\newlabel{sec:validation}{{3.5}{3}{Heuristic Validation (Not Supervised Labels)}{subsection.3.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Which Numbers Are ``The Same Experiment''?}{3}{subsection.3.6}\protected@file@percent }
+\newlabel{sec:settings}{{3.6}{3}{Which Numbers Are ``The Same Experiment''?}{subsection.3.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Experimental settings and their roles.}}{4}{table.1}\protected@file@percent }
+\newlabel{tab:settings}{{1}{4}{Experimental settings and their roles}{table.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Link-prediction results across settings (see \S  \ref {sec:settings} for comparability notes). The \textbf  {combined + social} row is the primary benchmark.}}{4}{table.2}\protected@file@percent }
+\newlabel{tab:main}{{2}{4}{Link-prediction results across settings (see \S \ref {sec:settings} for comparability notes). The \textbf {combined + social} row is the primary benchmark}{table.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Results}{4}{section.4}\protected@file@percent }
+\newlabel{sec:results}{{4}{4}{Results}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Quantitative Performance (TGCN)}{4}{subsection.4.1}\protected@file@percent }
+\newlabel{sec:quant}{{4.1}{4}{Quantitative Performance (TGCN)}{subsection.4.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Primary run details (combined row).}{4}{section*.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Variability and uncertainty.}{4}{section*.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Why do social edges lower AUC?}{4}{section*.17}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces \textbf  {Pair~1}---vessels 412000690 (blue) and 412325200 (orange), Chinese coast, 2013--2018, 102 days within 25\,km. Background = combined daily presence density (KDE, 0--1 scale). The model's top-ranked pair shows sustained co-presence in the Yellow Sea (${\sim }$121\textdegree E, 37--39\textdegree N), confirming the high link-prediction score corresponds to a real shared operating area.}}{5}{figure.1}\protected@file@percent }
+\newlabel{fig:casestudy}{{1}{5}{\textbf {Pair~1}---vessels 412000690 (blue) and 412325200 (orange), Chinese coast, 2013--2018, 102 days within 25\,km. Background = combined daily presence density (KDE, 0--1 scale). The model's top-ranked pair shows sustained co-presence in the Yellow Sea (${\sim }$121\textdegree E, 37--39\textdegree N), confirming the high link-prediction score corresponds to a real shared operating area}{figure.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Geographic Validation and Case Studies}{5}{subsection.4.2}\protected@file@percent }
+\newlabel{sec:geoval}{{4.2}{5}{Geographic Validation and Case Studies}{subsection.4.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}Gear-Aware Candidate Stratification}{5}{subsubsection.4.2.1}\protected@file@percent }
+\newlabel{sec:gear}{{4.2.1}{5}{Gear-Aware Candidate Stratification}{subsubsection.4.2.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Method.}{5}{section*.18}\protected@file@percent }
+\newlabel{eq:gear_discount}{{1}{6}{Method}{equation.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Key findings (Figure~\ref {fig:gear}).}{6}{section*.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Why the results look this way.}{6}{section*.20}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{What this means for the project.}{6}{section*.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Monthly Overlap and Cluster Context}{6}{subsection.4.3}\protected@file@percent }
+\newlabel{sec:overlap}{{4.3}{6}{Monthly Overlap and Cluster Context}{subsection.4.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces \textbf  {(a)} All 200 top candidates by gear combination: stacked counts of pairs that failed vs.\ passed the 25\,km / $\pm $1\,day geographic check. \textbf  {(b)} The 8 validated pairs with gear type, flag, proximity days, and TGCN rank.}}{7}{figure.2}\protected@file@percent }
+\newlabel{fig:gear}{{2}{7}{\textbf {(a)} All 200 top candidates by gear combination: stacked counts of pairs that failed vs.\ passed the 25\,km / $\pm $1\,day geographic check. \textbf {(b)} The 8 validated pairs with gear type, flag, proximity days, and TGCN rank}{figure.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.1}Gear Type Codes}{7}{subsubsection.4.3.1}\protected@file@percent }
+\newlabel{sec:gearcodes}{{4.3.1}{7}{Gear Type Codes}{subsubsection.4.3.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Exploratory Short-Window Analysis (August 2017)}{7}{subsection.4.4}\protected@file@percent }
+\newlabel{sec:aug2017}{{4.4}{7}{Exploratory Short-Window Analysis (August 2017)}{subsection.4.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Eight validated pairs (country $\cdot $ gear per vessel).}}{8}{table.3}\protected@file@percent }
+\newlabel{tab:eight_pairs}{{3}{8}{Eight validated pairs (country $\cdot $ gear per vessel)}{table.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Six-vessel cluster (Figure~\ref {fig:cluster}).}}{8}{table.4}\protected@file@percent }
+\newlabel{tab:cluster}{{4}{8}{Six-vessel cluster (Figure~\ref {fig:cluster})}{table.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Limitations}{8}{section.5}\protected@file@percent }
+\newlabel{sec:limitations}{{5}{8}{Limitations}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Threats to Validity}{8}{subsection.5.1}\protected@file@percent }
+\newlabel{sec:threats}{{5.1}{8}{Threats to Validity}{subsection.5.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Design and Data Constraints}{8}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion and Future Work}{8}{section.6}\protected@file@percent }
+\newlabel{sec:conclusion}{{6}{8}{Conclusion and Future Work}{section.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Bubble chart of monthly close approaches (days within 25\,km) for all eight validated pairs, 2013--2019. Each row is one pair (sorted by total overlap, highest at top); bubble size $\propto $ days within 25\,km that month. Pair~1 (CHN, 84 days across 9 months) dominates with large, closely spaced bubbles in 2015--2016, indicating persistent co-presence. Most other pairs are sporadic. Pair~7 is the only cross-flag pair.}}{9}{figure.3}\protected@file@percent }
+\newlabel{fig:overlap}{{3}{9}{Bubble chart of monthly close approaches (days within 25\,km) for all eight validated pairs, 2013--2019. Each row is one pair (sorted by total overlap, highest at top); bubble size $\propto $ days within 25\,km that month. Pair~1 (CHN, 84 days across 9 months) dominates with large, closely spaced bubbles in 2015--2016, indicating persistent co-presence. Most other pairs are sporadic. Pair~7 is the only cross-flag pair}{figure.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces \textbf  {(a)} Overview map of China showing the cluster region (red rectangle). \textbf  {(b)} Zoomed view of the East China Sea cluster. Faint gray dots show every recorded rendezvous point; colored markers highlight three cluster pairs (Pair~3, 4, 5---matching Figure~\ref {fig:overlap} numbering) involving six CHN-flagged vessels. The red X marks the weighted hotspot centroid (${\sim }$29.7\textdegree N, 122.3\textdegree E), roughly 50--80\,km offshore from Ningbo. Three independent pairs (six vessels) converge repeatedly on the same offshore area, suggesting a shared operating region rather than coincidence.}}{9}{figure.4}\protected@file@percent }
+\newlabel{fig:cluster}{{4}{9}{\textbf {(a)} Overview map of China showing the cluster region (red rectangle). \textbf {(b)} Zoomed view of the East China Sea cluster. Faint gray dots show every recorded rendezvous point; colored markers highlight three cluster pairs (Pair~3, 4, 5---matching Figure~\ref {fig:overlap} numbering) involving six CHN-flagged vessels. The red X marks the weighted hotspot centroid (${\sim }$29.7\textdegree N, 122.3\textdegree E), roughly 50--80\,km offshore from Ningbo. Three independent pairs (six vessels) converge repeatedly on the same offshore area, suggesting a shared operating region rather than coincidence}{figure.4}{}}
+\bibstyle{plainnat}
+\bibcite{hamilton2017inductive}{{1}{2017}{{Hamilton et~al.}}{{}}}
+\bibcite{kipf2017semi}{{2}{2017}{{Kipf and Welling}}{{}}}
+\bibcite{kroodsma2018tracking}{{3}{2018}{{Kroodsma et~al.}}{{}}}
+\bibcite{lu2011link}{{4}{2011}{{L\"u and Zhou}}{{}}}
+\bibcite{miller2018identifying}{{5}{2018}{{Miller et~al.}}{{}}}
+\bibcite{park2020systematic}{{6}{2020}{{Park et~al.}}{{}}}
+\bibcite{rossi2020temporal}{{7}{2020}{{Rossi et~al.}}{{}}}
+\bibcite{seo2018structured}{{8}{2018}{{Seo et~al.}}{{}}}
+\bibcite{yu2018spatio}{{9}{2018}{{Yu et~al.}}{{}}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Gear Type Codes}{10}{appendix.A}\protected@file@percent }
+\newlabel{app:gear}{{A}{10}{Gear Type Codes}{appendix.A}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}Source of Labels}{10}{subsection.A.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}Codes Used}{10}{subsection.A.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.3}How to Interpret Labels}{10}{subsection.A.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Gear type codes from the fleet \texttt  {geartype} column.}}{11}{table.5}\protected@file@percent }
+\newlabel{tab:gear_codes}{{5}{11}{Gear type codes from the fleet \texttt {geartype} column}{table.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Reproducibility commands. All commands assume the project root directory. Long lines break automatically.}}{11}{table.6}\protected@file@percent }
+\newlabel{tab:repro}{{6}{11}{Reproducibility commands. All commands assume the project root directory. Long lines break automatically}{table.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Reproducibility}{11}{appendix.B}\protected@file@percent }
+\newlabel{app:repro}{{B}{11}{Reproducibility}{appendix.B}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}Notation and Formal Problem Setup}{11}{appendix.C}\protected@file@percent }
+\newlabel{app:notation}{{C}{11}{Notation and Formal Problem Setup}{appendix.C}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.1}Symbol Glossary}{11}{subsection.C.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2}Graph Semantics}{11}{subsection.C.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Symbol table.}}{12}{table.7}\protected@file@percent }
+\newlabel{tab:symbols}{{7}{12}{Symbol table}{table.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.3}Temporal Link Prediction Objective (Informal)}{12}{subsection.C.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Evaluation.}{12}{section*.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.4}Training vs.\ Validation Distances}{12}{subsection.C.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Separation of training and validation distance thresholds.}}{12}{table.8}\protected@file@percent }
+\newlabel{tab:distances}{{8}{12}{Separation of training and validation distance thresholds}{table.8}{}}
+\gdef \@abspage@last{12}

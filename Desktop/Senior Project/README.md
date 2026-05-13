@@ -2,6 +2,11 @@
 
 *Canonical senior-project write-up: **`docs/final_report.md`** — “Graph-Based Screening for Potentially Cooperative Vessel Pairs” (temporal link prediction / TGCN); title and scope differ slightly from this README. Before binding/PDF, see **`docs/final_submission_checklist.md`**.*
 
+**Build PDFs (Pandoc + XeLaTeX; run from repo root):** `./build_presentation_pdf.sh` → `docs/presentation_script.pdf`; `./build_final_report_pdf.sh` → `docs/final_report.pdf`; or `./build_docs_pdfs.sh` for both. **LaTeX sources only:** `./build_tex.sh` regenerates `docs/final_report.tex` and `docs/presentation_script.tex` (then run `xelatex` on a `.tex` yourself if you edit by hand). Requires `pandoc` on `PATH` (or `/opt/homebrew/bin/pandoc`). Use these wrappers so paths are correct—running `pandoc presentation_script.md` from your home directory will fail. R code such as `install.packages()` belongs in the R console, not in Terminal.
+
+If Terminal says **Permission denied** on `./build_*.sh`, mark scripts executable once (paste as a whole line, no `#` comments at the end):  
+`chmod +x build_presentation_pdf.sh build_final_report_pdf.sh build_docs_pdfs.sh build_tex.sh docs/build_presentation_pdf.sh docs/build_final_report_pdf.sh docs/build_tex.sh`
+
 ## Abstract
 
 This project aims to detect cooperative "dark" fishing activity. The core idea is to combine vessel movement data with sea-surface temperature (SST) time-series as node attributes, and to use a Graph Auto‑Encoder (GAE) to reconstruct edges and surface likely missing links or bridge vessels.

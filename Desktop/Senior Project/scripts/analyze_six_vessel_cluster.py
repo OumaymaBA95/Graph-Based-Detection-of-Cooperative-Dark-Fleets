@@ -116,9 +116,16 @@ def main():
         default="artifacts/cooperative_pairs_with_flag_gear.csv",
         help="CSV for vessel country · gear labels in legend (optional)",
     )
+    ap.add_argument(
+        "--gear-enrichment",
+        default="artifacts/candidate_gear_enrichment.csv",
+        help="MMSI-level gear CSV (fills missing gear from --enrichment)",
+    )
     args = ap.parse_args()
 
     mmsi_map = load_mmsi_country_gear_map(args.enrichment)
+    from vessel_pair_labels import merge_candidate_gear
+    merge_candidate_gear(mmsi_map, args.gear_enrichment)
 
     df = pd.read_csv(args.overlap_csv)
     # We need rows where there is actual proximity and location estimates

@@ -1,150 +1,209 @@
 ---
-# Table of contents: enable when knitting to Word/HTML/PDF (RStudio: Knit).
+title: "Graph-Based Screening for Potentially Cooperative Vessel Pairs"
+subtitle: "A temporal link prediction approach using AIS (2012–2019)"
+author: Oumayma Ben Aoun
 output:
-  word_document:
-    toc: true
-    toc_depth: 3
-  html_document:
-    toc: true
-    toc_float: true
-    toc_depth: 3
   pdf_document:
-    toc: true
-    toc_depth: 3
+    latex_engine: xelatex
+    keep_tex: true
+toc: true
+toc-depth: 3
+numbersections: true
+header-includes: |
+  \setlength{\emergencystretch}{4em}
+  \usepackage{etoolbox}
+  \makeatletter
+  \renewcommand{\maketitle}{\begin{titlepage}\centering\vspace*{1.1in}{\LARGE\bfseries\@title\par}\vspace{2.25em}{\large\@author\par}\vspace{1em}{\normalsize\textit{Faculty Advisor: Dr. Ali Duman}\par}\vspace{0.6em}{\normalsize\textit{Committee Members: Dr. Katherine Shoemaker, Dr. Timothy Redl}\par}\vfill\end{titlepage}\clearpage}
+  \makeatother
+  \apptocmd{\tableofcontents}{\clearpage}{}{}
+  \AtBeginEnvironment{longtable}{\footnotesize\setlength{\tabcolsep}{4pt}}
+  \setlength{\hfuzz}{6pt}
+  \IfFileExists{fvextra.sty}{\usepackage{fvextra}\RecustomVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\},breaklines=true,breakanywhere=true}}{}
+  \AtBeginDocument{\sloppy}
 ---
-## Graph-Based Screening for Potentially Cooperative Vessel Pairs
 
-**Subtitle:** A temporal link prediction approach using AIS (2012–2019).
+<!-- Title, subtitle, author, and advisor line come from YAML / header-includes for Pandoc → PDF. Body starts at Abstract. -->
 
-### Abstract
+# Abstract {.unnumbered}
 
-Illegal, unreported, and unregulated (IUU) fishing motivates monitoring **coordinated** vessel behavior. This project builds an **unsupervised** pipeline: **daily** graphs from AIS (2012–2019), a **Temporal Graph Convolutional Network (TGCN)** for **temporal link prediction**, and **independent geographic checks** on raw tracks to prioritize high-scoring pairs. **Training edges** use a **10 km** same-day proximity rule; **stricter** distance screens (e.g., **25 km**) are **validation-only**. There are **no labels** for “cooperative” vessels—the model learns from **graph structure and time**, and outputs **candidates for review**, not ground truth.
+Illegal, unreported, and unregulated (IUU) fishing has increased interest in tools that surface vessels that may operate in a coordinated way. This project develops an **unsupervised** screening pipeline built on Automatic Identification System (AIS) data (2012–2019). Each day is represented as a graph of vessels; a **Temporal Graph Convolutional Network (TGCN)** performs **temporal link prediction** so that pairs that plausibly co-occur in the future rank highly. Raw tracks are then checked independently with simple geographic rules to prioritize pairs for analyst review. **Training graph edges** connect vessels whose positions fall within **10 km** on the **same calendar day**. Wider distance checks (for example **25 km**) are used only **after** scoring to validate candidates—they are **not** training labels. The model does **not** receive labels for “cooperative” behavior; it learns from **structure and timing** in the graphs and produces **candidates for review**, not adjudicated outcomes.
 
-**Main quantitative result (Table 1):** On the **combined** graph (proximity edges plus same–MMSI-prefix “social” edges, built with a corrected three-digit MID rule), a reproducible laptop run (**1450** training time buckets, 3 epochs, seed 1) achieves **ROC AUC = 0.72997** and **AP = 0.71381** on **876** held-out daily buckets (`artifacts/tgcn_social_maxb1450_ep3.json`). A **proximity-only** full graph reaches higher scores (~**0.78** AUC) under similar memory limits. A separate **short August 2017** window is used only for an **interpretability figure**; its metrics are **not** comparable to the 2012–2019 benchmark. **Eight** candidate pairs pass a strict **25 km, ±1 day** proximity filter. We do **not** claim legal findings or confirmed “dark fleet” membership.
+**Main quantitative result (Table 1):** On the **combined** graph—proximity edges plus optional **social** edges linking vessels that share the same three-digit maritime identifier (MID) prefix, implemented with a corrected MID rule—a reproducible laptop configuration (**1450** training days, 3 epochs, seed 1) achieves **ROC AUC = 0.72997** and **average precision (AP) = 0.71381** on **876** held-out daily test buckets (`artifacts/tgcn_social_maxb1450_ep3.json`). A **proximity-only** ablation on the same edge timeline reaches higher scores (about **0.78** AUC) but on a much smaller **20-bucket evaluation slice**; it is reported in Table 1 as a **directional ablation**, not a like-for-like headline. A narrow **August 2017** window was used early for exploration; its metrics **cannot** be compared with the full 2012–2019 benchmark, and this report does not include figures from that window. After strict **25 km** and **±1 day** screening, **eight** pairs remain of interest; a **gear-aware** follow-up analysis suggests that many **excluded** top candidates resemble routine same-fleet trawler co-location rather than unusual encounters. We **do not** assert legal conclusions or membership in any “dark fleet.”
+
+**Takeaways.** **(i)** Modest absolute scores are **expected** for an unsupervised, label-free screening task on global AIS, and the ±0.10 day-to-day spread is a property of the domain rather than a flaw of the model. **(ii)** **Post-hoc** **25 km / ±1 day** geography matters because **10 km** same-day graph structure can elevate fleet-like pairs that rarely meet the tighter physical standard; the geographic filter separates **fleet-scale similarity** from **pair-level proximity**. **(iii)** **How** registry information enters the graph matters as much as **whether** it does: dense same-MID social edges add noise, encourage over-smoothing, and compete with proximity in the loss—future work should fuse registry context as **node features** or as **typed edges** instead. **(iv)** The deliverable is a **short, auditable** list (top-200 → 8 geography survivors, ~4%; as a group, cross-gear pairs survive at ~5.1% vs 2.4% for trawler–trawler, and the best cross-gear category at ~10× the trawler–trawler rate) with **tracks and overlap plots**—**prioritized leads** plus **supporting context**, **not** a determination of misconduct.
 
 **Keywords:** AIS, IUU fishing, temporal graph neural networks, link prediction, vessel co-movement
 
 ---
 
-### 1. Introduction
+# Introduction
 
-**Problem.** Fisheries enforcement and research need ways to highlight vessels that may act together—transshipment, shared fishing grounds, or periods with missing AIS (“dark” behavior). Automatic vessel identification (AIS) provides large-scale movement data, but **cooperation is rarely labeled** in the data we use.
+**Problem.** Fisheries enforcement and marine research often need to narrow attention to vessel pairs that may interact at sea—whether through transshipment, repeated joint presence, or other coordinated patterns sometimes associated with periods of missing AIS (“dark” behavior). AIS offers broad spatial and temporal coverage, yet **explicit labels for cooperation are seldom available** in operational datasets.
 
-**What this work does.** We treat the problem as **temporal link prediction** on daily graphs: if the model assigns a high score to a vessel pair in a future time bucket, that pair is a **candidate** for analysts. We then **validate** candidates with simple proximity rules (distance between daily mean positions) and **case studies** (tracks, monthly overlap).
+**What this work does.** We cast screening as **temporal link prediction** on **daily** graphs of vessels. Pairs that receive high scores under this objective are **candidates** for closer inspection. We support that step with straightforward **post-hoc** checks: distances between **daily mean positions**, maps of raw tracks, and summaries of overlap over time.
 
-**What this work does not do.** We do not prove coordination or IUU activity; we provide a **ranked list plus evidence** that human review can interpret.
+**What this work does not do.** This pipeline does **not** establish coordination, wrongdoing, or IUU activity. It yields a **ranked list** and **supporting geographic context** intended for expert review.
 
 **Contributions (short).**
 
-1. Reproducible pipeline: AIS → daily graphs → TGCN with temporal node features → time-based train/test split.  
-2. **MID-correct** combination of proximity and same-prefix social edges (`scripts/mmsi_mid.py`, `scripts/add_social_edges.py`).  
-3. Reported **full-coverage** metrics under realistic **laptop memory** limits (train buckets capped where needed).  
-4. Validation and interpretation: proximity filters, eight-pair overlap plots, and an August 2017 interpretability figure with **country and gear** on the vertical axis (from cell-level fleet joins where available).
+1. An end-to-end, reproducible workflow: AIS records → daily graphs → TGCN with optional temporal node features → chronological train/test split.  
+2. A **three-digit MID–consistent** design for combining proximity edges with same-prefix **social** edges (`scripts/mmsi_mid.py`, `scripts/add_social_edges.py`).  
+3. Reported metrics on **full-coverage** graphs within **practical laptop memory** limits (training is capped by day count where necessary).  
+4. Interpretation beyond raw scores: geographic filters, overlap visualizations for eight validated pairs, and **gear-aware stratification** (§4.2.1) that compares candidates to fleet-wide co-location patterns so that routine fleet behavior can be distinguished from unusual pairs.
 
-**Roadmap.** §3 summarizes the **link-prediction setup** (full notation in **Appendix C**), then **data**, **graph rules** (10 km proximity + MID social edges), **training objective**, and **post-hoc** validation distances. §4 gives quantitative results (**Table 1**), geographic and interpretability figures (**Tables 2–3**, Figures 1–4), and **Appendix A** for gear definitions. §5–6 summarize limitations and conclusions; **Appendix B** lists reproducibility commands.
+**Roadmap.** Section 3 presents **methods**: formal setup (**Appendix C**), **data**, **graph construction** (10 km proximity plus optional MID-based social edges), **training**, and **validation-only** distance rules. Section 4 presents **results**: headline metrics (**Table 1**), an encoder comparison (**GCN** vs. **graph transformer**) on a **smaller capped** graph (§4.1.1; distinct from the full-coverage experiments in Table 1), geographic and case-study material (**Tables 2–3**, Figures 1–4), and gear definitions (**Appendix A**). Section 5 discusses limitations (grouped under task, data, evaluation, and deployment) and ends with a short **synthesis**; Section 6 concludes; **Appendix B** collects reproduction commands.
 
-> **For readers and committees (three sentences).** (1) **Training** graphs use **10 km** same-day proximity edges (plus optional MID “social” edges); **25 km** and wider checks are **post-hoc validation**, not class labels. (2) The headline **0.72997 / 0.71381** scores refer to the **combined** full-coverage graph in **Table 1**; **proximity-only** and **capped** rows are **different experiments**—see §3.6. (3) **August 2017** figures illustrate behavior in a **short window**; do not mix their metrics with the 2012–2019 benchmark.
-
----
-
-### 2. Background and related work
-
-**Fisheries monitoring and AIS.** Illegal, unreported, and unregulated (IUU) fishing and at-sea coordination are active research areas. Large-scale studies use **Automatic Identification System (AIS)** broadcasts to map fishing effort and vessel encounters (e.g., global fisheries footprint and transshipment patterns—see References). AIS does not, by itself, label “cooperative” or illicit behavior; analysts typically combine movement data with **proximity**, **registry**, or **enforcement** context. That gap motivates **unsupervised** tools that rank pairs for review.
-
-**AIS-based fisheries and encounter analytics.** Beyond footprint mapping, vessel-level AIS supports **encounter** and **behavior** analysis (e.g., transshipment and loitering—Miller et al., 2018; monitoring-system assessments—Park et al., 2020). That line of work motivates **movement-based screening** but often relies on **rules** or **supervised** targets when labels exist. Here we stay **unsupervised** at the learning stage and reserve geography for **post-hoc** validation.
-
-**Graph learning and link prediction.** Co-presence is naturally a **graph**: vessels are nodes; edges encode same-day proximity (and optional same-registry structure). **Graph convolutional** encoders (Kipf & Welling, 2017) and **inductive** methods on large graphs (Hamilton et al., 2017) learn vector representations of nodes from topology and attributes. **Link prediction** scores missing or future links (Lü & Zhou, 2011); **temporal** graph models (e.g., spatio-temporal convolutions—Yu et al., 2018; recurrent or memory-based temporal graph networks—Rossi et al., 2020) apply when \(G_t\) **varies** across \(t\). Our implementation uses a **TGCN**-style recurrent update over daily snapshots with **inner-product** scores for pairs (see §3.4).
-
-**Evaluation philosophy.** We use a **chronological train/test split** over daily buckets: train on earlier days, evaluate on **later** days. ROC AUC and AP therefore measure **forecasting**-style generalization to future co-occurrence, not i.i.d. mixing of time points (which can inflate scores when temporal drift is ignored).
+> **For readers and committees (three sentences).** (1) **Training** graphs use **10 km** same-day proximity (plus optional MID social edges); **25 km** and wider screens are **validation**, not supervised labels. (2) The headline **0.72997 / 0.71381** values apply to the **combined** full-coverage row in **Table 1**; **proximity-only** and **capped** settings are **separate experiments**—see §3.6. (3) **Figure 2** uses 2012–2019 fleet context to show that many high-scoring pairs align with ordinary fleet co-location; the **eight** pairs that pass strict geography stand out relative to that background.
 
 ---
 
-### 3. Methods
+# Related work
 
-#### 3.1 Problem formulation
+**Fisheries monitoring and AIS.** Research on illegal, unreported, and unregulated (IUU) fishing and on coordinated vessel behavior makes heavy use of **Automatic Identification System (AIS)** data to characterize fishing effort and vessel encounters (see References for global fisheries footprint and transshipment studies). AIS alone does not encode whether two vessels cooperated or broke rules; analysts usually combine tracks with **proximity logic**, **registry information**, or **enforcement intelligence**. That limitation motivates methods that **rank pairs without cooperation labels**.
 
-Each **calendar day** (bucket) \(t\) defines a snapshot **undirected** graph \(G_t = (V, E_t)\): **nodes** \(V\) are vessel **MMSIs**; **edges** \(E_t\) follow the **construction rules** in §3.3—primarily **same-day** positions within **10 km** (Haversine), plus optional **same three-digit MID** social edges. The learning task is **temporal link prediction**: a **TGCN** produces node embeddings so that **inner-product scores** between pairs rank **observed** edges above **sampled non-edges** under **binary cross-entropy with logits**, with **no** “cooperative” supervision—only structure and time (implementation: `scripts/run_tgcn_time_multiseed.py` and related; details §3.4). **Train and test** partition **time buckets** chronologically (**~70% / ~30%**); **ROC AUC** and **AP** measure ranking quality on **held-out future** buckets.
+**AIS-based fisheries and encounter analytics.** Beyond mapping where vessels go, AIS supports **encounter analysis** and **behavioral screening** (e.g., transshipment and loitering—Miller et al., 2018; assessments of monitoring systems—Park et al., 2020). Much of that work uses **explicit rules** or **supervised** signals when labels exist. Here the learning stage remains **unsupervised**; geographic checks enter only as **post-hoc** validation.
 
-**Appendix C** lists **symbols**, restates the setup for readers who prefer a **notation table**, and separates **training-edge distance (10 km)** from **validation-only** distances.
+**Graph learning and link prediction.** Vessel co-presence maps naturally to a **graph**: nodes are vessels; edges encode same-day proximity (and here, optional ties based on registry prefix). **Graph convolutional networks** (Kipf & Welling, 2017) and **inductive** neighborhood models (Hamilton et al., 2017) learn node embeddings from topology and features. **Link prediction** ranks missing or future edges (Lü & Zhou, 2011). When the graph changes over time, **temporal** formulations apply—for example spatio-temporal convolutions (Yu et al., 2018) or recurrent temporal graph networks (Rossi et al., 2020). Our model follows a **TGCN**-style recurrent update over daily snapshots and scores pairs with an **inner-product** link head (§3.4).
 
-#### 3.2 Data and time buckets
+**Evaluation philosophy.** Train and test sets split **calendar days** in chronological order: the model trains on earlier periods and is scored on **later** periods. ROC AUC and average precision therefore reflect **forward-looking** ranking quality. Random mixing of days across time would ignore drift and could **inflate** scores; we avoid that design.
 
-We use AIS-derived records spanning **2012–2019**, aggregated to **daily** resolution (~2.38B vessel-day records; sea-surface temperature merged where available). The timeline is divided into **daily buckets**; **876** buckets enter the main edge list used for evaluation.
+---
 
-#### 3.3 Graph construction
+# Methods
 
-- **Nodes** = MMSI identifiers (vessels).  
-- **Proximity edges:** same **calendar day** (daily time floor, typically **1D**), pairwise **great-circle (Haversine)** distance at most **10 km** between daily position summaries. The public full-coverage edge list `edges_2012_2019_full.parquet` is built with `scripts/build_temporal_graph_baseline.py` at this scale; builds may also apply a **cap on edges per bucket** to limit memory (see `README.md` for the exact command used per artifact).  
-- **Social edges:** undirected links between vessels sharing the same **three-digit ITU MID** (national/organizational MMSI prefix), derived with **`scripts/mmsi_mid.py`** so prefixes are not split on **six** digits. To keep graphs tractable, social edges are **capped** (e.g., **up to 2000 per bucket** in `scripts/add_social_edges.py`).  
-- **Combined edge list** for the primary social-augmented benchmark: `artifacts/edges_full_with_social.parquet`.
+## Problem formulation
 
-**Validation distances (not training edges).** Post-hoc proximity checks for candidates use **25 / 50 / 100 km** (and optional **±1 day** windows) on **daily mean** positions—**different** from the 10 km graph edge rule; §3.5.
+Fix a **calendar day** (time bucket) $t$. Let $G_t = (V, E_t)$ be an **undirected** graph for that day: **vertices** $V$ are vessel identifiers (**MMSIs**); **edges** $E_t$ are built as in §3.3—mainly pairs whose positions lie within **10 km** great-circle distance on day $t$, optionally augmented by **social** edges between vessels sharing the same **three-digit MID** prefix. The learning problem is **temporal link prediction**: a **TGCN** maps the sequence of graphs to node embeddings; **pair scores** are inner products of embeddings. Training minimizes **binary cross-entropy with logits** so that **observed** edges score above **randomly sampled non-edges** on each day. There is **no** label for “cooperative” fishing—only structural positives and negatives (see `scripts/run_tgcn_time_multiseed.py`; architecture §3.4). **Training** and **test** sets split **days** in time order (**about 70% / 30%**). **ROC AUC** and **AP** summarize ranking quality on **future** test days.
 
-#### 3.4 Model and training objective
+**Appendix C** collects **notation**, repeats the formal picture for readers who prefer a tabular glossary, and distinguishes **10 km training edges** from **validation-only** distances.
 
-**Architecture.** Temporal Graph Convolutional Network (**TGCN**) with optional **temporal node features** (degree, interaction counts, partner diversity, recency, inter-event gaps—see `scripts/build_temporal_node_features.py` and `README.md`).
+## Data and time buckets
 
-**Training details (primary laptop benchmark).** Unless noted otherwise: **embedding dimension 32**, **Adam** optimizer, learning rate **0.001**, **3** training epochs over ordered training buckets, **binary cross-entropy with logits** comparing positive edges to **randomly sampled negative** pairs (same count as positives **per snapshot**). Chronological split ratio **~70/30** (`--test-ratio 0.3` in training scripts). **Train-bucket count** was capped at **1450** for the headline combined-graph run due to **laptop RAM** (higher caps caused OOM).
+AIS records cover **2012–2019** at **daily** aggregation (on the order of **2.38 billion** vessel–day rows, with sea-surface temperature merged where available). The study timeline is partitioned into **one graph per calendar day**; **876** days carry the edge data used for the primary evaluation.
 
-**Evaluation:** **ROC AUC** and **AP** on **test buckets**; edge deduplication rules avoid trivial leakage of training links into the test objective (see code comments in the TGCN training scripts).
+## Graph construction
 
-**Computational cost.** All experiments ran on a single laptop (Apple M-series, 16 GB unified RAM). The primary combined-graph run (1450 train buckets, 3 epochs) completed in roughly **20–40 minutes** wall-clock depending on background load; peak resident memory sat near **12–14 GB**, which is why bucket caps above ~1480 triggered the OS out-of-memory killer. The proximity-only full graph trained under similar constraints. Capped-graph runs and the short August 2017 window finished in under 5 minutes each. No GPU was used; all matrix operations ran on CPU via PyTorch. These numbers are approximate—the training scripts do not log wall-clock time or peak RSS automatically, so precise reproducibility of timing requires re-running under controlled conditions.
+- **Nodes:** one per **MMSI** (vessel identifier).  
+- **Proximity edges:** same **calendar day**, **Haversine** distance at most **10 km** between **daily** position summaries for the two vessels. The full-coverage list `edges_2012_2019_full.parquet` is produced by `scripts/build_temporal_graph_baseline.py`. Some builds **limit edges per day** to fit in memory; see `README.md` for commands tied to each artifact.  
+- **Social edges:** undirected ties between vessels that share the **same three-digit ITU MID** prefix. **`scripts/mmsi_mid.py`** extracts the prefix so it is not truncated at six digits. Social edges are **capped per day** (for example **2000** per bucket in `scripts/add_social_edges.py`) so that graphs remain tractable.  
+- **Combined (proximity + social)** benchmark list: `artifacts/edges_full_with_social.parquet`.
 
-#### 3.5 Heuristic validation (not supervised labels)
+**Validation distances (not training edges).** Candidate review uses **25 / 50 / 100 km** thresholds (and sometimes **±1 day** alignment) on **daily mean** positions. These rules **do not** define training edges and are **not** the same as the **10 km** edge construction; see §3.5.
 
-For candidate pairs we compute **Haversine distance** between **daily mean positions** and count days within **25 / 50 / 100 km** (and ±1 day alignment where noted). This is **post-hoc geography**, not a training label.
+## Model and training objective
 
-#### 3.6 Which numbers are “the same experiment”?
+**Architecture.** A Temporal Graph Convolutional Network (**TGCN**) with optional **temporal node features** derived from recent graph statistics (degree, interaction counts, partner diversity, recency, gaps between events—built in `scripts/build_temporal_node_features.py`; summarized in `README.md`).
 
-Readers should keep the following settings separate (do not mix metrics across rows):
+**Training details (primary laptop benchmark).** Unless stated otherwise: **embedding size 32**, **Adam**, learning rate **0.001**, **3** passes over training days in order, **binary cross-entropy with logits** with one **random non-edge** sampled per positive edge **per day**. Chronological split **about 70% train / 30% test** (`--test-ratio 0.3`). For the headline **combined** graph run, training was limited to **1450** days because **larger** day counts exceeded available **RAM** on the laptop and led to out-of-memory termination.
+
+**Evaluation.** **ROC AUC** and **AP** are computed on **held-out test days**. The implementation drops or masks edges so that the test loss does not reuse training positives in a trivial way (see comments in the TGCN scripts).
+
+**Computational cost.** Experiments used one **laptop** (Apple M-series, **16 GB** unified memory). The main combined-graph run (**1450** train days, **3** epochs) typically finished in **20–40 minutes** depending on system load; **peak memory** was about **12–14 GB**, which explains why caps near **1480** days triggered failures. Proximity-only full graphs were trained under similar limits. Smaller capped graphs and the brief August 2017 run finished in **under five minutes** each. All computation was **CPU-only** (PyTorch). Timing and memory are **indicative**; scripts do not log wall-clock or RSS automatically, so exact timings require a controlled rerun.
+
+## Heuristic validation (not supervised labels)
+
+For scored pairs we measure **great-circle distance** between **daily mean positions** and count days falling within **25 / 50 / 100 km** (and optional **±1 day** alignment). These steps describe **where** vessels were relative to each other; they **do not** define the learning objective. §4.2.1 adds **gear-aware** context by comparing candidates to **fleet-wide** co-location patterns.
+
+## Which numbers are “the same experiment”?
+
+Treat each row below as a **distinct** experimental setting—**do not** combine metrics across rows:
 
 | Setting | Role |
 |--------|------|
 | **2012–2019 combined graph (proximity + social)** | **Primary benchmark**—full timeline, social edges, reported AUC/AP on 876 test buckets. |
 | **Proximity-only graph** | **Ablation**—no social edges; often higher AUC on this codebase; shows contribution of the social layer. |
 | **Capped / smaller graphs** | **Sanity checks and tuning**—easier prediction; **very high** AUC; **not** the same difficulty as full global coverage. |
-| **August 2017 short window** | **Visualization only**—few buckets; metrics are **not** comparable to the main table. |
+| **August 2017 short window** | **Exploratory only**—few buckets; metrics are **not** comparable to the main table. No figures from this window appear in the final report. |
 
 ---
 
-### 4. Results
+# Results
 
-§4 presents quantitative link-prediction metrics (**Table 1**), followed by geographic validation and interpretability figures. Recall from §3.6 that table rows represent **different experimental settings**—do not mix metrics across them.
+The presentation follows a standard empirical flow: **overall scores** (§4.1), **maps and interpretation** (§4.2–4.3), and a brief **exploratory** slice from August 2017 (§4.4). As emphasized in §3.6, **each row of Table 1** corresponds to a **different** graph setup—scores from different rows **cannot** be merged into one narrative.
 
-#### 4.1 Quantitative performance (TGCN)
+## Quantitative performance (TGCN)
 
-**Table 1** collects results across settings (see §3.6 for comparability notes).
+**Headline numbers, in one place.** On the full **2012–2019** combined graph the primary laptop run reports **ROC AUC = 0.72997** and **AP = 0.71381** on **876** held-out daily test buckets. The **proximity-only** ablation on the same edge timeline reaches **0.77618 / 0.79549**, but on a much smaller **20-bucket evaluation slice** (single-seed, 5 epochs); it is reported as a **directional ablation**, not a like-for-like headline. The smaller **capped** graph used for tuning reaches roughly **0.95 / 0.96**, and a **5-fold rolling** version of that capped setup gives **0.927 ± 0.067 / 0.947 ± 0.048** across seeds **1–5**. **Table 1** collects every setting in one block; the rest of this section explains how to read each row.
 
-| Setting | Edge list | Train cap / notes | Test eval | ROC AUC | AP |
-|---------|-----------|-------------------|-----------|---------|-----|
-| Proximity-only, full | `edges_2012_2019_full.parquet` | ~1500 train buckets | time split | **0.77618** | **0.79549** |
-| **Combined + social (primary laptop run)** | `edges_full_with_social.parquet` | **1450** train buckets, 3 epochs, seed 1 | **876** test buckets | **0.72997** | **0.71381** |
-| Capped graph | capped parquet | tuning / easier task | — | ~0.95 | ~0.96 |
-| Capped (5-fold CV) | capped parquet | rolling CV | — | 0.927 ± 0.067 | 0.947 ± 0.048 |
-| August 2017 (case-study window) | short window | small | 5 test buckets | ~0.56 | ~0.67 |
+**Table 1.** All TGCN results in one place. Each row is a **different** experiment—do not mix metrics across rows (§3.6). Parquet filenames are omitted here so the table fits the page; see §3 (graph construction) and **Appendix B** (reproducibility) for full paths.
 
-**Primary run details (combined row):** embedding dimension 32, learning rate 0.001, temporal node features enabled. Artifacts: `artifacts/tgcn_social_maxb1450_ep3.json` and `.csv`. Increasing allowed training buckets (e.g., 400 → 1450) improved AUC/AP until **memory limits** on the laptop (~1480–1500 buckets caused OOM/`killed`). Further ablations: `artifacts/tgcn_improvement_suite_summary.csv`.
+| Setting | Train / eval scope | Test buckets | ROC AUC | AP |
+|---------|-------------------|-----------|---------|-----|
+| Proximity-only, full coverage edges | full 2012–2017-08 train; eval on a **20-bucket** slice (single seed, 5 epochs) | 20 | **0.77618** | **0.79549** |
+| **Combined + social — primary laptop run** | **1450** train buckets, 3 epochs, seed 1 | **876** | **0.72997** | **0.71381** |
+| Capped graph (single seed) | tuning / easier task | — | ~0.95 | ~0.96 |
+| Capped graph, 5-fold rolling CV | seeds 1–5 | — | 0.927 ± 0.067 | 0.947 ± 0.048 |
+| August 2017 (case-study window) | exploratory short window | 5 | ~0.56 | ~0.67 |
 
-**Proximity-only row source.** The exact row values (0.77618 / 0.79549) come from `artifacts/tgcn_time_temporal_nodes_fullcoverage.json`.
+**How to read Table 1.** **The only headline number is the combined+social row** (**0.72997 / 0.71381** on **876** test buckets). The proximity-only row sits at **0.77618 / 0.79549** but on a **20-bucket evaluation slice**—roughly **40× fewer** test days—so the higher value is **directional, not like-for-like**: it says proximity edges score better than proximity+social on these days, but does not say a fully comparable proximity-only run would land at 0.78. The **capped** rows look much higher because the graph is a **smaller, denser subset** that is structurally easier to predict; they are reported only to support **tuning** and **multi-seed sanity checks**, not as alternative headlines. The **August 2017** row covers a **5-day** window used for early exploration and gear enrichment (§4.4); it is intentionally **not** comparable to the main rows.
 
-**Variability and uncertainty.** The headline combined run is a **single-seed** report (seed = 1), so cross-seed confidence intervals are not available for the primary row. However, two other sources give a sense of variability:
+**Are these numbers good?** For an **unsupervised, label-free** screening task on **global AIS** with millions of node-day combinations, **AUC around 0.73** with **AP around 0.71** is in line with what should be expected. The **AP** result is the more telling figure: on a sparse temporal graph where the vast majority of candidate pairs are non-edges, an AP near **0.71** corresponds to a model that consistently surfaces real co-occurrence near the top of its rankings—well above the **prevalence baseline** that random ranking would yield. The proximity-only **directional ablation** (~**0.78** AUC on a 20-bucket evaluation slice—see Table 1 caveat) hints at an upper bound on what this architecture can extract from purely geographic structure; closing the remaining gap will likely require **architectural changes**, not just longer training (see “Why do social edges lower AUC?” below and §6).
 
-- **Per-bucket dispersion.** Across the 876 test buckets the per-bucket standard deviation is **±0.103** for ROC AUC and **±0.106** for AP. Some days are easier (denser, more regular graphs) and others harder (sparser activity, regime shifts); the headline **0.72997 / 0.71381** is a macro-average over that distribution, not a claim that every day matches it. Per-bucket values: `artifacts/tgcn_social_maxb1450_ep3.csv`.
-- **Cross-seed reference (capped graph).** On the easier capped graph, a 5-fold rolling-window CV with seeds 1–5 yields **0.927 ± 0.067 AUC** and **0.947 ± 0.048 AP** (Table 1). Cross-seed variance is modest there; extending multi-seed runs to the full-coverage graph is a priority for future work.
+**Day-to-day variability is a property of the domain, not a bug.** The per-bucket standard deviations of about **±0.103** ROC AUC and **±0.106** AP across the **876** test days mean that **some days are genuinely easier than others**: graphs are denser when vessels concentrate on seasonal grounds and sparser during transit windows; weather, holidays, and policy changes also shift activity. A **macro-average** of **0.73 / 0.71** across that distribution is the right summary; a stable model on global AIS should not produce identical performance every single day, and one that did would be a flag for **leakage** rather than for skill.
 
-**Why do social edges lower AUC?** The proximity-only graph scores ~​0.78 AUC versus ~​0.73 for the combined graph. Three factors likely contribute:
+**Operationally relevant top-N behavior.** For a screening tool the practical question is: of the pairs the model ranks highest, **how many** survive an analyst’s independent geographic test? Among the **top 200** pairs from the full-coverage combined-graph run, **eight** clear the strict **25 km / ±1 day** rule on raw daily means—a roughly **4%** survival rate on the long list (Table 2; §4.2)—well above the underlying prevalence of repeated 25 km contacts among **all** active pairs, which is orders of magnitude smaller. The **gear-aware** stratification in §4.2.1 tightens this further: as a **group**, cross-gear combinations survive at **5.1%** versus **2.4%** for trawler–trawler (a ~2× aggregate effect), and at the **extremes** the best cross-gear category (**Fixed gear + Trawlers**) survives at **25%**—roughly **10×** the trawler–trawler rate. The full funnel is summarized below.
+
+**Table 1b — Operational funnel (combined graph, full-coverage run).** A precision-at-K-style summary of how the top-200 ranked candidates collapse to an analyst-reviewable list. Numbers come from the same primary run as Table 1 (`tgcn_social_maxb1450_ep3.json`) and the gear-aware analysis in §4.2.1.
+
+| Stage | Pairs | Pass rate vs. previous stage |
+|-------|------:|------------------------------|
+| Top-200 model-ranked candidates (input list) | 200 | — |
+| Pass strict **25 km / ±1 day** geographic filter | **8** | **4.0%** of 200 |
+| &nbsp;&nbsp;— within passing set: **cross-gear** pairs | 6 | **5.1%** of 118 cross-gear candidates |
+| &nbsp;&nbsp;— within passing set: **trawler–trawler** pairs | 2 | **2.4%** of 82 trawler–trawler candidates |
+| Highest-discriminating cross-gear category: **Fixed gear + Trawlers** | 1 / 4 | **25.0%** (~10× trawler–trawler) |
+
+ROC AUC and AP are reported in Table 1 because they are standard, but the **top-200 → geography → gear-context** funnel is what makes the output usable for an analyst.
+
+**Primary run details (combined row).** Embedding size **32**, learning rate **0.001**, temporal node features **on**. Primary outputs: `tgcn_social_maxb1450_ep3.json` plus the companion `.csv` in `artifacts/`. Raising the training day cap from **400** toward **1450** improved metrics until **RAM** limited further growth (roughly **1480–1500** days caused failure). Other tuning experiments are summarized in `tgcn_improvement_suite_summary.csv` (same folder).
+
+**Proximity-only row (directional ablation).** Values **0.77618 / 0.79549** come from `tgcn_time_temporal_nodes_fullcoverage.json` in `artifacts/`. That run used the full **2012–2019** edge file and trained up to the same train/test cutoff, but **evaluated** on only a **20-bucket evaluation slice** (versus **876** buckets for the combined run); reporting it alongside the combined headline is informative for **direction** (proximity edges score higher than proximity+social on these days) but the **absolute** numbers are not directly comparable. Re-running the proximity-only configuration on the full **876**-bucket horizon is queued under §6.
+
+**Variability and uncertainty.** The headline combined result uses **one** random seed (seed **1**); a full multi-seed interval for that full-coverage row is **explicitly noted as future work** in §6. Two views of spread are already available and are reported as a partial substitute:
+
+- **Day-to-day spread (within one seed).** Over the **876** test days, standard deviations of **per-day** ROC AUC and AP are about **±0.103** and **±0.106**. Easy and hard days coexist; the reported **0.72997 / 0.71381** is a **macro-average** over days, not a promise about every individual day. The breadth of this spread is itself a feature of the domain—seasonal grounds, weather, holidays, and policy changes all shift activity—and a model that produced identical performance on every test day would be a flag for **leakage** rather than for skill. Per-day CSV: `tgcn_social_maxb1450_ep3.csv` in `artifacts/`.
+- **Cross-seed spread on a capped graph.** A **5-fold** rolling validation with seeds **1–5** on the smaller capped graph gives **0.927 ± 0.067** AUC and **0.947 ± 0.048** AP (Table 1). Cross-seed variance there is modest, which is **suggestive but not conclusive** that seed effects on the full-coverage row would be smaller than the day-to-day effects above. Re-running the headline configuration with **at least 3–5 seeds** is the single most useful next experiment for this report and is a top item in §6.
+
+### GCN vs. graph transformers
+
+Keeping the §3.4 training recipe fixed, **only** the **per-day graph encoder** changes. Training driver: `run_tgcn_time_multiseed.py`. Encoder code: `temporal_graph_baselines.py` in the `scripts/` tree. **two `GCNConv` layers + GRU** versus **two `TransformerConv` layers + GRU**, with the same **dot-product** link head. **“Graph transformer”** here means **neighbor attention** through **`TransformerConv`** at each snapshot—not **full-graph** self-attention over all vessels (that would be **quadratic** in fleet size and is not attempted).
+
+**How to read this comparison.**
+
+1. All numbers below use the **capped** edge list (parquet basename contains `cap5000_even30`; full path in **Appendix B**). Do **not** treat this as a second headline for the full-coverage **Table 1** row (§3.6).  
+2. The main benchmark uses **`--model tgcn`**. This ablation compares **`--model gcn`** to **`--model graph_transformer`**, i.e. **convolution vs. neighbor attention** in the **same two-layer + GRU** template—not a different temporal core.
+
+**Protocol.** Train/test day caps **400** / **80**; **5** epochs (the Table 1 combined row uses **3**); seeds **1–3**; embedding **32**; temporal node features on; hard negatives; **49** test days after masking. Write-ups and scripts: `gcn_vs_graph_transformer.md` and `compare_gcn_graph_transformer.py` (see **Appendix B** for full paths).
+
+*Means ± standard deviation are **across seeds** (1–3), unlike the day-level spread described for the headline run in §4.1.*
+
+| Model | ROC AUC | Average precision |
+|-------|---------|-------------------|
+| **GCN** + GRU | **0.6201 ± 0.0102** | **0.7672 ± 0.0226** |
+| **TransformerConv** + GRU | 0.4576 ± 0.1197 | 0.6735 ± 0.0554 |
+
+On average, **GCN** achieves higher ROC AUC and AP and **lower** seed-to-seed variance. Paired tests by calendar day favor GCN for **each** seed (see artifact). A plausible—but **not** proven—explanation is that **noisy** proximity neighborhoods are stabilized more easily by **fixed** neighborhood aggregation than by **learned** attention weights under this budget, and that attention adds **parameters** without compensating gains. **Not attempted here:** global transformers, latent graph learning, edge-conditioned attention, or wide hyperparameter sweeps (see §6).
+
+**Why do social edges lower AUC?** The **directional ablation** (proximity-only on a 20-bucket evaluation slice) scores ~0.78 AUC versus ~0.73 on the 876-bucket combined+social run. Because the two are evaluated on different horizons the absolute gap is **directional, not like-for-like**, but the same qualitative pattern—proximity-only ahead of proximity+social—shows up in every smaller-scale ablation we ran. Three factors likely contribute:
 
 1. **Noise from registry grouping.** MID social edges link every pair of vessels sharing the same three-digit national prefix. In a predominantly Chinese-flagged dataset (MID 412), this connects thousands of vessels that never physically co-occur, injecting edges that the model must learn to discount.
 2. **Over-smoothing.** Adding dense social edges increases the effective neighborhood size for each GCN layer. When many neighbors are structurally similar but behaviorally unrelated, node embeddings blur toward a common mean, reducing the model’s ability to distinguish genuinely co-present pairs.
 3. **Objective dilution.** The training loss treats social edges and proximity edges identically (both are positive examples). The model therefore spends capacity fitting registry structure rather than geographic co-occurrence, which is the signal that carries over to unseen test days.
 
-Disentangling these effects—e.g., by weighting social edges lower, using a heterogeneous-edge architecture, or tightening the MID cap—is listed under future work (§6).
+Adding dense MID-based social edges was a deliberate **first-cut** way to inject registry context, and the modest performance drop is informative rather than a dead end: it suggests the right answer is not "more edges of the same kind" but **a different way to fuse identity information with movement**. Several concrete directions look more promising and are listed under §6:
 
-#### 4.2 Geographic validation and case studies
+1. **Heterogeneous-edge architectures.** Treat proximity and registry as **different relations** so the model can learn separate aggregation functions per edge type (R-GCN, HGT, or a typed message-passing layer). The current homogeneous GCN forces both relations through the same weight matrix, which is exactly where the dilution arises.
+2. **Edge-type-specific weights inside the loss.** A simple intermediate step before changing the architecture: down-weight social positives (or sample them less aggressively) so that **proximity** edges dominate the training signal while social edges still contribute as a soft prior.
+3. **MID as a node feature, not an edge.** Encoding the three-digit MID prefix as a learned **node embedding** concatenated with the temporal node features lets the model use registry context as a **bias** on each vessel rather than as a forced positive between every same-flag pair. This avoids creating thousands of structurally identical neighbors in MID 412 while still letting the encoder condition on flag.
+4. **Tighter or richer registry signals.** Beyond MID, ownership clusters, port-of-registry, or operator IDs (where available) are usually more informative than three-digit national prefixes; combined with (1) and (3), they would also let the model learn to **discount** very common groupings.
 
-Among workflows that rank and check top candidates, **eight** pairs pass a **25 km, ±1 day** rule. Examples: **412422375 ↔ 412428225** (about **2** days within 25 km); **412000690 ↔ 412325200** (**102** days within 25 km). Detailed narratives and additional plots: `docs/candidate_case_studies.md`.
+The point is not that registry information is unhelpful—it is that **how** it enters the graph matters at least as much as **whether** it enters at all.
 
-**Figure 1 — why include a map?** The model assigns abstract scores to vessel pairs. To verify that a high score corresponds to real-world co-movement, we plot raw AIS tracks on a map. **Figure 1** shows our **strongest candidate pair** (**412000690 ↔ 412325200**, 102 days within 25 km) against the **Chinese coastline** in the Yellow Sea / East China Sea. If the model were surfacing random pairs, we would not expect their tracks to overlap geographically — but here they clearly do. This is **visual validation**, not proof of coordination. The **eight-pair** summaries in **Table 2** and Figures 2–3 use a **fixed** full-coverage screen (slightly different pair list); Figure 1 is the **flagship** example.
+## Geographic validation and case studies
+
+Under the workflow that ranks candidates and then applies a **25 km**, **±1 day** rule, **eight** pairs remain. Two examples are **412422375 $\leftrightarrow$ 412428225** (**2** qualifying days) and **412000690 $\leftrightarrow$ 412325200** (**102** days). Extended discussion and plots appear in `docs/candidate_case_studies.md`. §4.2.1 summarizes **gear composition** across all **200** ranked pairs and relates the **192** excluded pairs to **expectations** from fleet-wide co-location.
+
+**Figure 1 — purpose.** Link scores are abstract; **maps** tie them to geography. **Figure 1** highlights the pair **412000690 $\leftrightarrow$ 412325200** (**102** days within **25 km**) against the **Chinese** coast (**Yellow Sea / East China Sea**). Chance pairs would rarely show **persistent** spatial overlap; these tracks **do** overlap—supporting that the score reflects **real co-movement**, not that we have proven illicit coordination. **Table 2** and Figures 3–4 summarize **eight** pairs under a **fixed** full-coverage screening rule (the pair set differs slightly from Figure 1); Figure 1 remains the clearest **single-pair** illustration.
 
 How to read the figure:
 
@@ -158,13 +217,45 @@ How to read the figure:
 - **Tan shading** = land (10 m Natural Earth coastline); labeled cities (**Shanghai**, **Qingdao**, **Jinan**, **Nanjing**, **Yancheng**) provide geographic reference along the coast.
 
 ![Case study tracks](../artifacts/plots/case_study_pairs/pair_412000690_412325200_contour.png)  
-*Figure 1. Vessel pair **412000690** (blue) and **412325200** (orange), Chinese coast, 2013–2018. Background = combined daily presence density (KDE, 0–1 scale; see color bar and "How to read" above). **Takeaway:** the model’s top-ranked pair shows sustained co-presence in the Yellow Sea (~121 E, 37–39 N), confirming the high link-prediction score corresponds to a real shared operating area. Tracks-only version: `pair_412000690_412325200.png`. Reproduce: Appendix B.*
+*Figure 1. Flagship candidate pair (**412000690**, blue; **412325200**, orange), Yellow Sea / Chinese coast, 2013–2018. Shading: summed kernel density of daily presence (0–1); contours mark density thresholds (see §4.2 “How to read”). Confirms sustained overlap near ~121°E, 37–39°N—link score aligns with a shared operating area, not random pairing. Tracks-only PNG and commands: Appendix B.*
 
-#### 4.3 Monthly overlap and cluster context
+### Gear-aware candidate stratification
 
-**Figure 2** charts the monthly count of days each validated pair's vessels were within **25 km**. **Figure 3** maps those same rendezvous locations geographically and highlights a **six-vessel** subgroup near **~30 N, 122 E**.
+The model nominates about **200** pairs; after the **25 km / ±1 day** geographic rule, **eight** remain. The question is what the other **192** pairs represent. A **gear-aware** post-processing step summarizes their **fleet context** and offers a numerical rationale for treating many of them as **ordinary** same-fleet overlap.
+
+**Method.** For **267** distinct MMSIs in the top-200 list we infer a **dominant gear** by sampling **96** vessel-days (one per month from 2012–2019) and joining to **fleet** grids with the same **hours-weighted** rule used elsewhere (§4.3.1). Independently, we estimate how often each **gear pair** (trawler–trawler, trawler–gillnet, etc.) appears in the same grid cell on the same day using **32** sampled fleet days spanning 2012–2019—about **seven million** cell-day observations in total. That baseline answers how common each gear pairing is **before** consulting any model score.
+
+Each candidate receives `adjusted = TGCN_score × discount` with `discount = 1 / (1 + 2 × normalized_baseline_rate)`. Gear combinations that are **frequent** in the fleet receive a **larger** discount; **rarer** or **cross-gear** combinations are discounted **less**. Unknown gear receives **no** change.
+
+**Key findings (Figure 2):**
+
+- **75% of the top-200 candidates** are trawler-dominated: 82 pairs (41%) are **Trawlers + Trawlers** and 67 (34%) are **Line / generic + Trawlers**. However the two categories tell very different stories: **Trawlers + Trawlers** is actually *1.1× below* the fleet baseline — the model is not preferentially elevating same-gear pairs; there are simply many trawler pairs in the data. **Line / generic + Trawlers**, by contrast, appears **10.5× above** the fleet baseline — the TGCN is specifically surfacing these cross-gear encounters far more than chance would predict, suggesting genuine signal.
+- **50% are same-flag** (predominantly CHN + CHN), consistent with vessels from the same national fleet operating in the same waters.
+- After gear adjustment, cross-gear validated pairs **held or improved** their rank: the **Set gillnets + Trawlers** pair (412461376 $\leftrightarrow$ 412415321) jumped **48 ranks** (72 → 24), and the **Fixed gear + Trawlers** pair (412422375 $\leftrightarrow$ 412428225) dropped only 2 ranks.
+- The two **Trawlers + Trawlers** validated pairs dropped **70+ ranks** each (e.g., 80 → 154), confirming their co-presence is explained by shared fishing grounds rather than distinctive coordination.
+
+**Why the results look this way.**  The top-200 list is dominated by trawler pairs for a straightforward reason: trawlers are the most common vessel type in the dataset and they concentrate in the same high-density fishing grounds (Yellow Sea, East China Sea). From the TGCN's perspective, two trawlers that share the same seasonal migration look structurally identical — they appear in the same grid cells, on the same days, year after year. The model correctly identifies this overlap but cannot distinguish "two boats following the same fish" from "two boats deliberately meeting." That is why 80 of the 82 trawler-trawler candidates **fail** the strict 25 km / ±1 day check: their graph-level similarity does not translate to sustained physical proximity on a given day.
+
+Cross-gear pairs tell the opposite story. A fixed-gear vessel (stationary nets or traps) and a trawler (moving nets) have different operating modes, target different species, and rarely share the same grid cell by chance. When the model flags such a pair *and* the geographic filter confirms they were repeatedly within 25 km, the co-location is unlikely to be coincidental. This is reflected in the pass rates: **Fixed gear + Trawlers** passes at **25%** (1 of 4), compared to **2.4%** for trawler-trawler pairs — roughly a **10× difference**. The intermediate categories follow the same gradient: **Set gillnets + Trawlers** passes at **8.3%**, and **Line / generic + Trawlers** at **6.0%**.
+
+**What this means for the project.** The gear-aware analysis serves two purposes:
+
+1. **It justifies the geographic filter.** The 192 excluded pairs are not "false positives" in the traditional sense — the model genuinely detected shared movement patterns. But those patterns are explained by normal fleet behavior (thousands of same-type vessels fishing the same waters), not by vessel-to-vessel coordination. The filter correctly separates fleet-level noise from pair-specific signal.
+2. **It strengthens the 8 validated pairs.** The fact that cross-gear pairs survive at disproportionately high rates means the validated set is enriched for behaviorally unusual encounters — exactly the kind of co-location that warrants further investigation. In particular, the Set gillnets + Trawlers pair that jumped 48 ranks after adjustment (72 → 24) was originally buried among dozens of trawler pairs; the gear-aware lens reveals it as one of the most distinctive candidates in the entire list.
 
 How to read Figure 2:
+
+- **Panel (a)** answers "why did 192 of 200 fail?" Each horizontal bar is one gear-type combination; bar length is the **number of candidate pairs** in that category (all 200 are shown). Each bar is **stacked**: gray = did not pass the 25 km / ±1 day geographic check; green = passed. **Failed** and **passed** counts are written once to the **right of each bar** (not inside narrow segments), so labels do not overlap. A strip below the chart shows the **whole cohort** (192 failed + 8 passed = 200). The bracket still highlights that **pass rates** (passed ÷ category size) are much higher for cross-gear categories than for **Trawlers + Trawlers**—e.g. **Fixed gear + Trawlers** **25%**, **Set gillnets + Trawlers** **8.3%**, **Line / generic + Trawlers** **6.0%**, versus **2.4%** for **Trawlers + Trawlers** (82 pairs), roughly **10×** at the extremes.
+- **Panel (b)** answers "should we trust the 8 that survived?" A table lists every validated pair with its MMSI identifiers, gear combination, flag match, days within 25 km, mean distance, and TGCN rank. Six of eight are cross-gear pairs, consistent with genuine vessel-to-vessel encounters rather than fleet noise. The two trawler-trawler pairs have higher mean distances (191–349 km across overlap days) and lower ranks, further supporting the interpretation that their validation is marginal compared to the cross-gear pairs.
+
+![Gear-aware re-ranking](../artifacts/plots/gear_aware_reranking.png)  
+*Figure 2. Gear-stratified review of top-200 candidates after the **25 km / ±1 day** rule. **(a)** Counts by gear-type combination: gray = failed geography, green = passed (all 200 pairs). **(b)** Summary table of the eight passing pairs (gear, flag, days within 25 km, rank). Script: `scripts/gear_aware_reranking.py`; Appendix B.*
+
+## Monthly overlap and cluster context
+
+**Figure 3** charts the monthly count of days each validated pair's vessels were within **25 km**. **Figure 4** maps those same rendezvous locations geographically and highlights a **six-vessel** subgroup near **~30 N, 122 E**.
+
+How to read Figure 3:
 
 - Each **row** is one vessel pair, sorted from most overlap (top) to least (bottom). The **y-axis label** shows the pair number, the flag state(s) involved (e.g., CHN for China), and a summary line giving the total days and active months.
 - Each **bubble** represents one calendar month. **Bubble size is proportional to the number of days** the two vessels were within 25 km that month (see the size legend in the upper right: 1, 5, 10, 20 days).
@@ -173,7 +264,7 @@ How to read Figure 2:
 - **Alternating row shading** (white / light gray) helps visually separate pairs.
 - **Color** distinguishes pairs but carries no additional meaning beyond identification.
 
-How to read Figure 3:
+How to read Figure 4:
 
 - **Faint gray dots** show all rendezvous points (monthly locations where any of the eight pairs were within 25 km).
 - **Colored markers** (circles, squares, diamonds, triangles, crosses) each represent one of the **six cluster vessels**. The legend in the upper left identifies each vessel by abbreviated MMSI and flag state (all CHN).
@@ -181,88 +272,102 @@ How to read Figure 3:
 - The **red X** marks the **weighted hotspot centroid** — the average location of all cluster rendezvous points (~29.7 N, 122.3 E).
 - **Tan land shading**, coastlines, rivers, and labeled cities (**Shanghai**, **Hangzhou**, **Ningbo**, **Wenzhou**, **Fuzhou**) provide geographic reference.
 
-##### 4.3.1 Gear type codes (how to read “country · gear”)
+### Gear type codes (how to read “country · gear”)
 
-Legend labels on Figures 2–4 and Tables 2–3 show **country · gear** per vessel. **Country** comes from the cell-fleet enrichment (`artifacts/cooperative_pairs_with_flag_gear.csv`) when the MMSI appears there, otherwise from the **ITU MID** prefix (e.g., MID111). **Gear** strings (e.g., `trawlers`, `set_gillnets`, `fixed_gear`, `fishing`) are **`geartype` labels** from **cell-aggregated fleet** files, assigned by **hours-weighted** overlap between MMSI daily cells and fleet rows (`scripts/enrich_pairs_with_flag_gear.py`). They indicate **broad fisheries-activity categories**, not a formal gear license per vessel. The **em dash (—)** means no gear could be attributed for that MMSI in the extract—common for the full-coverage pairs, which mostly fall outside the August 2017 enrichment window (see **Table 2**). **Plain-language definitions** of every code are in **Appendix A**.
+Figures 3–4 and Tables 2–3 label each vessel as **country · gear**. **Country** is taken from the enrichment file `artifacts/cooperative_pairs_with_flag_gear.csv` when present; otherwise it is inferred from the **ITU MID** prefix (for example **MID111**). **Gear** strings such as `trawlers` or `set_gillnets` come from **fleet** `geartype` fields on a **grid** and are assigned by **hours-weighted** overlap between vessel tracks and fleet cells (`scripts/enrich_pairs_with_flag_gear.py`). These labels describe **coarse fisheries-activity categories**, **not** formal licensing or gear certificates. Tables 2–3 and the figures use the **2012–2019** enrichment—the same basis as §4.2.1—which is **broader** than an August 2017-only enrichment. Definitions for each code appear in **Appendix A**.
 
 **Table 2 — Eight validated pairs (country · gear per vessel).** *Format: src MMSI, dst MMSI, then src country · gear | dst country · gear.*
 
 | src | dst | Country · gear (src \| dst) |
 |-----|-----|------------------------------|
-| 412422375 | 412428225 | CHN · — \| CHN · — |
-| 412437423 | 412435485 | CHN · — \| CHN · — |
-| 412410128 | 412416248 | CHN · — \| CHN · — |
-| 412461376 | 412415321 | CHN · — \| CHN · — |
-| 412420679 | 412413383 | CHN · — \| CHN · — |
-| 412985698 | 412443375 | CHN · — \| CHN · — |
-| 412450427 | 111203412 | CHN · — \| MID111 · — |
-| 412461376 | 412427825 | CHN · — \| CHN · — |
+| 412422375 | 412428225 | CHN · fixed_gear \| CHN · trawlers |
+| 412461376 | 412415321 | CHN · trawlers \| CHN · set_gillnets |
+| 412437423 | 412435485 | CHN · trawlers \| CHN · fishing |
+| 412410128 | 412416248 | CHN · fishing \| CHN · trawlers |
+| 412420679 | 412413383 | CHN · fishing \| CHN · trawlers |
+| 412450427 | 111203412 | CHN · fishing \| MID111 · trawlers |
+| 412985698 | 412443375 | CHN · trawlers \| CHN · trawlers |
+| 412461376 | 412427825 | CHN · trawlers \| CHN · trawlers |
 
-**Table 3 — Six-vessel cluster (Figure 3).** *MMSIs selected by `scripts/analyze_six_vessel_cluster.py`; labels match plot legend.*
+**Table 3 — Six-vessel cluster (Figure 4).** *MMSIs selected by `scripts/analyze_six_vessel_cluster.py`; labels match plot legend.*
 
 | MMSI | Country · gear |
 |------|----------------|
-| 412413383 | CHN · — |
-| 412420679 | CHN · — |
-| 412427825 | CHN · — |
-| 412435485 | CHN · — |
-| 412437423 | CHN · — |
-| 412461376 | CHN · — |
+| 412413383 | CHN · trawlers |
+| 412420679 | CHN · fishing |
+| 412427825 | CHN · trawlers |
+| 412435485 | CHN · fishing |
+| 412437423 | CHN · trawlers |
+| 412461376 | CHN · trawlers |
 
 ![All pairs days within 25 km (monthly)](../artifacts/plots/pair_overlap_series/all_pairs_days_within_25km.png)  
-*Figure 2. **Bubble chart** of monthly close approaches (days within 25 km) for all eight validated pairs, 2013–2019. Each row is one pair (sorted by total overlap, highest at top); bubble size is proportional to the number of days within 25 km that month; numbers inside larger bubbles show exact counts. **Pair 1** (CHN, 84 days across 9 months) dominates with large, closely spaced bubbles in 2015–2016, indicating **persistent co-presence** over an extended period. Most other pairs are **sporadic** — a handful of small bubbles scattered across different years — suggesting occasional rather than sustained proximity. **Pair 7** (CHN and MID111) is the only cross-flag pair. Y-axis labels show total days and active months per pair.*
+*Figure 3. Monthly days within **25 km** for the eight validated pairs (2013–2019). One row per pair (sorted by total overlap); bubble area is proportional to days that month (see legend). Axis labels give total overlap days and months active. Pair 1 shows dense 2015–2016 overlap; others are mostly sporadic; pair 7 is the only cross-flag case. Reading guide: §4.3.*
 
 ![Six-vessel cluster](../artifacts/plots/six_vessel_cluster_scatter.png)  
-*Figure 3. **Geographic scatter** of rendezvous locations for all eight validated pairs, plotted against the Chinese coast from Fuzhou to Shanghai. Faint gray dots show every recorded rendezvous point; colored markers (see legend) highlight the **six cluster vessels** (all CHN-flagged, abbreviated MMSIs in legend). Gray lines connect cluster members that co-occur as a pair. The red **X** marks the weighted hotspot centroid (~29.7 N, 122.3 E), sitting in the East China Sea roughly 50–80 km offshore from Ningbo. Most cluster activity is concentrated in a narrow band between 29 N and 30.5 N, while a few outlier points appear further south near Wenzhou. **Takeaway:** six vessels from multiple distinct pairs converge repeatedly on the same offshore area east of Ningbo, suggesting a **shared operating region** rather than coincidence — consistent with the co-presence patterns in Figure 2.*
+*Figure 4. Rendezvous locations (monthly, within 25 km) for validated pairs, with Chinese coast context (Fuzhou–Shanghai). Gray dots: all rendezvous points; colored symbols: six vessels that recur across pairs (legend abbreviates MMSI); gray segments connect recorded pairings. Red **×**: centroid of cluster rendezvous (~29.7°N, 122.3°E), east of Ningbo. Highlights repeated convergence of multiple pairs in one offshore band—consistent with Figure 3.*
 
-#### 4.4 Exploratory short-window analysis (August 2017; not the main benchmark)
+## Exploratory short-window analysis (August 2017; not the main benchmark)
 
-**Why August 2017?** The main TGCN benchmark (Table 1) spans **2012–2019** but produces abstract link-prediction scores with no fleet metadata attached. The **cell-level fleet enrichment** files that supply **country and gear** labels are only available for **August 2017**—that is the one window where model outputs can be joined to fleet context and interpreted in terms of *what kinds* of vessels were flagged. A separate, smaller TGCN run was therefore trained on this narrow slice (five daily buckets, Aug 7–11) so that cooperation predictions could be cross-referenced with gear type and flag state. The resulting metrics (~0.56 AUC, ~0.67 AP) are **not comparable** to the headline 2012–2019 scores; this window exists purely for **interpretability**.
+Early in the project we trained a small TGCN on **five** consecutive days in **August 2017** (7–11 Aug)—one of the few intervals where cell-level fleet products provided **country and gear** labels for enrichment. Metrics on that slice (about **0.56** AUC, **0.67** AP) sit **far below** the 2012–2019 benchmark and should be treated only as **illustrative**.
 
-**Figure 4** summarizes those predictions across all 61 pairs observed during the five-day window. The left panel breaks down cooperative pairs per day by **gear-type group**; the right panel shows the **flag-state** composition of cooperative pair-days. The four gear groups in the chart are:
-
-- **Trawlers** (blue) — both vessels in the pair are classified as **trawlers** (vessels that tow nets through the water or along the seabed). This is the single largest category.
-- **Line fishing** (orange) — at least one vessel uses **hook-and-line or generic fishing** methods (includes pairs labeled `fishing`, `fishing | trawlers`, `fishing | set gillnets`, etc.).
-- **Set gear** (green) — pairs involving **stationary or deployed gear**: **set gillnets** (nets left in place for fish to gill in the mesh), **set longlines** (long lines with baited hooks left to soak), or **pole-and-line** methods.
-- **Other / mixed** (gray) — pairs where gear is **unknown** (em dash) for one or both vessels, or combinations that do not fit the above groups (e.g., `purse seines`).
-
-Full definitions of every individual gear code are in **Appendix A**.
-
-![Cooperation summary](../artifacts/plots/tgcn_daily_cooperation_heatmap.png)  
-*Figure 4. **Aggregate cooperation summary** (Aug 7–11, 2017). **Left:** stacked bar chart of cooperative pairs per day, colored by gear-type group. Numbers inside each segment show the count; daily totals are labeled above. **Right:** flag-state breakdown of all cooperative pair-days. **Takeaway:** cooperation predictions are spread across the full five-day window, with **trawler–trawler** pairs (blue) accounting for the largest share on most days and **Chinese-flagged** vessels (CHN, red bar) dominating the country breakdown. Friday (Aug 11) had the most cooperative pairs (14), driven almost entirely by trawlers.*
+**Why we abandoned the August 2017 shortcut for the main pipeline.** The five-day window was attractive at first because the corresponding fleet enrichment file came pre-labeled, which made gear and country joins trivial; but five days of test data is **too short** for a temporal benchmark (only **5** test buckets versus **876** in the headline run), concentrates on a single seasonal regime that does **not** reflect annual variability, and ties **gear assignment** to whatever vessels happened to be active in that one summer week. The full-timeline gear analysis in §4.2.1 **replaces** this shortcut: it assigns gear using **2012–2019** fleet context for all **200** candidates—roughly **seven million** cell-day observations across **32** sampled fleet days—so the labels reflect each vessel’s **dominant** behavior over years rather than a single-week snapshot, and the headline metrics in Table 1 sit on a properly long evaluation horizon. An August 2017 cooperation graphic remains in `artifacts/plots/tgcn_daily_cooperation_heatmap.png` for archival purposes but is **not** part of this document. Gear codes are defined in **Appendix A**.
 
 ---
 
-### 5. Limitations
+# Discussion
 
-#### 5.1 Threats to validity (why high scores ≠ “guilt”)
+This section states **limitations** of the task, data, metrics, and operational use—standard before §6.
 
-- **Link prediction is not a verdict.** ROC AUC / AP measure **ranking** of observed vs sampled non-edges under the **graph definition**. A model can score well when vessels **share fishing grounds**, **ports**, or **traffic lanes**—behavior that is **legal** and common.  
-- **AIS selection and compliance.** Vessels may **disable** AIS, use **identity changes**, or have **sparse** coverage; the graph only sees **reported** positions.  
-- **Confounding by density.** **Crowded** regions produce many **possible** edges; **degree** and **popularity** effects can inflate link-prediction metrics relative to “rare coordination.”  
-- **Metric–semantics gap.** **Good calibration** of the learning objective does **not** imply validated **enforcement** outcomes; external **ground truth** would be needed for that (we have none for cooperation).
+## Threats and limitations
 
-#### 5.2 Design and data constraints
+The same concerns as in earlier drafts, grouped so readers can scan by **what kind** of limitation is at issue.
 
-- **No behavioral ground truth** for “cooperation” or IUU.  
-- **Grid and sampling** choices affect positions and edges.  
-- **Laptop memory** caps training buckets (**1450** stable here; higher values failed).  
-- **August 2017** is a narrow window—patterns there may not generalize.  
-- **Shared geography** vs **coordination:** overlap in dense regions is ambiguous (see §5.1).  
-- **Country and gear** on plots come from **cell-aggregated fleet** tables (§4.3.1, **Appendix A**)—descriptive context, not a formal registry. Gear labels should support interpretation only, not enforcement decisions.
-- **Single-seed headline numbers.** The primary combined-graph AUC/AP is from one seed; per-bucket dispersion and cross-seed references are discussed in §4.1, but full multi-seed CIs on the headline row remain future work.
+### Task definition and semantics
+
+- **Link prediction ranks edges under a graph rule, not misconduct.** ROC AUC / AP measure fit to observed vs sampled **non-edges**. High scores follow from **shared grounds**, **lanes**, or **ports** as easily as from rare coordination.  
+- **No cooperation, IUU, or “dark fleet” labels** were used for training; the objective is structural co-occurrence only.  
+- **Shared geography is not the same as coordination.** In crowded fisheries, overlap is **ambiguous** even when it is wholly legal and routine.
+
+### Data and preprocessing
+
+- **AIS** can be missing, intermittent, or misused; graphs only see **broadcast** tracks.  
+- **Daily means, grid cells, and merge rules** shape both edges and post-hoc distances.  
+- **Dense regions** yield many possible edges—**degree** and **baseline encounter rate** can inflate scores relative to detecting **rare** pairwise events.  
+- The **August 2017** slice is a **narrow** exploratory window—**do not** treat it like the 2012–2019 benchmark.  
+- **Country · gear** come from **fleet cell enrichment** (§4.3.1, **Appendix A**): useful for narrative context, **not** a substitute for registry or license records.
+
+### Evaluation and reproducibility
+
+- **Metrics are not enforcement decisions.** Good ranking on the surrogate task does **not** validate real-world outcomes; **ground-truth coordination** would be needed and is **absent** here.  
+- The headline combined-graph row is **single-seed**; §4.1 gives day-level spread and seed spread on **other** setups—**multi-seed** uncertainty on the full benchmark is **future work**.  
+- **Gear-aware adjustment** (§4.2.1) uses a **sampled** fleet baseline (**32** fleet days, ~7 million cell-days) and a **fixed discount** formula: **transparent**, **not** calibrated; alternate formulas would **change ranks**. Use it to **interpret** the long list, **not** as a second detector replacing geography.
+
+### Deployment and computational constraints
+
+- **Training** was limited to **~1450** days on a **16 GB** laptop; larger caps hit **memory** failure—reported limits are **hardware-bound**, not an intrinsic ceiling on the method.  
+- In operations, treat outputs as **ranked lists** plus maps/tables: **analyst triage**, **not** automated findings.
+
+## Synthesis
+
+**Social edges** link vessels by registry prefix even when they rarely meet; that injects **noise**, encourages **over-smoothing**, and **dilutes** proximity in the training loss—so the **combined** graph’s headline scores **trail** the **proximity-only** curve despite embedding organizational signal one might encode differently in another architecture. **Strict post-hoc geography** (25 km, ±1 day on daily means) tests whether pairs flagged by **10 km** same-day structure actually **repeatedly co-locate** at operational distances; it **separates** fleet-scale **structural similarity** from **pair-level** proximity. **“Validated”** here means **passing that screen** together with documented **tracks and overlap**—an analyst gets a **short** list of **reviewable** cases with **reproducible exhibits**, **not** a determination of guilt or IUU.
 
 ---
 
-### 6. Conclusion and future work
+# Conclusion and future work
 
-We presented an **unsupervised** AIS→graph→TGCN pipeline with a **time-split** evaluation and an explicit **link-prediction** formulation (§3.1; **Appendix C**). The **combined proximity + MID-correct social** graph yields **0.72997 ROC AUC** and **0.71381 AP** on **876** test buckets under the documented laptop protocol (**Table 1**), alongside **proximity-only** and **capped-graph** comparisons. **Eight** pairs pass strict **post-hoc** proximity screening (**Table 2**); interpretability figures add **country and gear** context where data allow (**Appendix A**). For practice, the output is a **ranked candidate list** plus **reproducible** geographic and fleet-context checks—not a determination of wrongdoing. We do **not** claim confirmed coordination or IUU.
+This report describes an **unsupervised** pipeline from AIS to daily graphs to a **TGCN** for **temporal link prediction**, evaluated with a **chronological** train/test split (§3.1; formal symbols in **Appendix C**). On the **combined** graph—proximity edges plus **MID-consistent** social edges—the documented laptop run reaches **ROC AUC = 0.72997** and **AP = 0.71381** on **876** test days (**Table 1**), with **proximity-only** and **capped-graph** settings reported for comparison. **Eight** pairs remain after conservative **post-hoc** distance filters (**Table 2**). The **gear-aware** analysis (§4.2.1) suggests that much of the top-200 list reflects **routine** trawler-dominated fleet structure, whereas pairs that clear geography—and especially **cross-gear** pairs—look **less** typical relative to fleet baselines. Figures and tables add **country and gear** context where enrichment exists (**Appendix A**). For operational use, the deliverable is a **ranked candidate list** with **reproducible** geographic and contextual checks—not a finding of guilt or confirmed IUU.
 
-**Future work** includes finer spatial/temporal resolution; owner or fleet metadata from registries; **supervised or semi-supervised** learning when reliable labels exist; tighter integration of **movement-based gear** or behavior classifiers; full-coverage **multi-seed** runs and larger training-bucket budgets on **high-memory** hardware; **heterogeneous-edge** or **edge-weighted** architectures to better exploit social edges without the over-smoothing and noise effects described in §4.1; and continued care in separating **benchmark** metrics (2012–2019) from **illustrative** short windows (e.g., August 2017).
+**Future work.** Three directions stand out as both feasible on the existing pipeline and high-value:
 
----
+1. **Multi-seed uncertainty on the full benchmark.** Re-run the headline combined-graph configuration with at least **3–5 seeds** so the **single-seed** headline of **0.72997 / 0.71381** can be reported with a proper confidence interval rather than only the day-level spread (§4.1). Pair this with a **precision-at-K** sweep (top **50 / 100 / 200** pairs versus geographic survival rate) so the **operational** value of the model is reported in the same table as the macro metrics.
+2. **Better fusion of registry / ownership information.** The observed drop from the proximity-only ablation (~**0.78** AUC on a 20-bucket slice) to the combined+social run (~**0.73** AUC on 876 buckets) does not say that registry context is unhelpful—it says that **dense, equally-weighted** social edges between every same-MID pair are the wrong way to inject it. More promising fusions, all listed in §4.1: **heterogeneous-edge** architectures (R-GCN / HGT / typed message passing) that learn a **separate** aggregation per edge type; **edge-type-specific weights** in the loss so proximity dominates the training signal; and treating MID (or richer ownership / port-of-registry IDs) as a **node feature** concatenated with the temporal embedding rather than as an explicit edge—conditioning the encoder on flag without creating thousands of structurally identical neighbors. Each of these should also tighten the **top-200 → geography → gear-context** funnel in **Table 1b**, raising the analyst-yield rate above the current **4%** and—if the gap between trawler–trawler and best-cross-gear pass rates persists—make the operational top-N list cleaner without an analyst having to filter post-hoc.
+3. **Scaling and richer signals.** Finer spatial-temporal resolution; **supervised or semi-supervised** extensions where trustworthy labels exist (e.g., declared transshipment events); **movement-based** gear or behavior models; larger day budgets on **high-memory** machines beyond the **~1450**-day laptop ceiling; and a disciplined separation of the **main 2012–2019 benchmark** from **illustrative** short windows such as August 2017.
 
-### References
+```{=latex}
+\clearpage
+```
+
+# References {.unnumbered}
 
 - Kroodsma, D. A., et al. (2018). *Tracking the global footprint of fisheries*. Science, 359(6378), 904–908.  
 - Miller, N. A., et al. (2018). *Identifying global patterns of transshipment behavior*. Frontiers in Marine Science, 5, 240.  
@@ -276,17 +381,21 @@ We presented an **unsupervised** AIS→graph→TGCN pipeline with a **time-split
 
 ---
 
-### Appendix A — Gear type codes
+```{=latex}
+\clearpage
+```
+
+# Appendix A — Gear type codes {.unnumbered}
 
 *Plain-language definitions for **gear** strings in **Tables 2–3** and **Figures 2–4**. The same content is kept in the repository as **`docs/gear_types.md`** for version control and easy editing.*
 
-#### A.1 Source of labels
+## Source of labels {.unnumbered}
 
-In this project, **gear** on figures and tables comes from **cell-level fleet aggregates**, not from a per-vessel registry. For each MMSI–day, we join AIS daily cells to fleet files where each row is **hours** by **flag × geartype** in that cell; the vessel is labeled with the **geartype that receives the most weighted hours** that day (`scripts/enrich_pairs_with_flag_gear.py`). The label is a **coarse, behavioral proxy** for “what kind of fishing that cell’s traffic was attributed to,” not a formal gear certificate for the MMSI.
+Figure and table **gear** labels are **not** copied from a vessel registry. For each vessel–day we intersect AIS grid cells with **fleet** rows that report **hours** by **flag × geartype** within the cell; we assign the **geartype with the largest weighted hours** (`scripts/enrich_pairs_with_flag_gear.py`). The result is a **coarse behavioral tag**—“what fishing activity dominates that cell’s attributed effort”—rather than an official gear permit for that MMSI.
 
-**Plots use —** when no gear could be attributed (vessel missing from the join, or no overlapping fleet rows).
+Plots show **—** when enrichment fails (no fleet overlap or vessel absent from the join).
 
-#### A.2 Codes in `artifacts/cooperative_pairs_with_flag_gear.csv`
+## Codes in `artifacts/cooperative_pairs_with_flag_gear.csv` {.unnumbered}
 
 These strings are taken **as-is** from the fleet **`geartype`** column (snake_case).
 
@@ -300,37 +409,43 @@ These strings are taken **as-is** from the fleet **`geartype`** column (snake_ca
 | **`other_purse_seines`** | **Purse seining (other).** A **surrounding net** used on **schooling fish**; the bottom is **pulled closed** (“pursed”) like a drawstring. “Other” indicates a sub-type bucket in the source taxonomy (not necessarily “miscellaneous quality”). |
 | **`pole_and_line`** | **Pole-and-line / baitboat.** Fish caught with **hand-held poles** and **hooks**, often with **live bait**; common in some tuna fisheries. |
 
-#### A.3 How to interpret labels
+## How to interpret labels {.unnumbered}
 
 1. **Same MMSI, different days** can get different geartypes if the vessel moves between cells dominated by different fleet attributions.  
-2. **Same geartype on two MMSIs** does not prove they use identical gear—only that both were attributed the same **coarse** class in that **August 2017** window (where enrichment applies).  
+2. **Same geartype on two MMSIs** does not prove they use identical gear—only that both were attributed the same **coarse** class in the fleet enrichment window (2012–2019 for all tables and figures).  
 3. **AIS “ship type”** codes differ from fleet **geartype** here: the latter is **fisheries-activity** oriented, not the full IMO/AIS ship-type list.
 
 Methodology of the join and weighting: `scripts/enrich_pairs_with_flag_gear.py` and §4.3–4.4 of this report.
 
-#### A.4 Related work (not from the same CSV)
+## Related work (not from the same CSV) {.unnumbered}
 
 The repository also includes a **movement-based gear classifier** trained on **anonymized** labeled tracks (see project `README.md`, “Gear classification”). Those class labels (e.g. `purse_seines`, `trollers`) are **not** automatically the same strings as the fleet **`geartype`** column above; do not merge them without an explicit mapping.
 
 ---
 
-### Appendix B — Reproducibility
+```{=latex}
+\clearpage
+```
+
+# Appendix B — Reproducibility {.unnumbered}
 
 | Item | Command / path |
 |------|----------------|
 | Combined edges | `python3 scripts/add_social_edges.py --edges artifacts/edges_2012_2019_full.parquet --out artifacts/edges_full_with_social.parquet --max-social-per-bucket 2000` |
 | Primary TGCN JSON/CSV | `artifacts/tgcn_social_maxb1450_ep3.json`, `.csv` — PyG env, `PYTHONPATH=scripts` |
 | Optional per-bucket metric plots (not in main report) | `python3 scripts/plot_tgcn_bucket_metrics.py --report artifacts/tgcn_social_maxb1450_ep3.json --out-dir artifacts/plots` |
-| Case study track plots (Figure 1) | `python3 scripts/compute_pair_overlap_from_daily.py --pairs artifacts/case_study_pairs.csv --daily-root "data/MMSI daily vessels " --top-k 4 --distance-km 25 --day-window 1 --max-files-per-year 0 --out-dir artifacts/plots/case_study_pairs --contour` — **`--max-files-per-year 0`** uses all daily CSVs (default); a small number **undercounts** overlap days vs `docs/candidate_case_studies.md`. **`--contour`**: combined daily presence density (sum of two 2D KDE surfaces, `Spectral_r` colormap, labeled iso-lines, colorbar). With **cartopy** installed, the plot includes **coastlines, land fill, rivers, and city labels** for geographic context. First pair → **`pair_<src>_<dst>_contour.png`** + tracks-only **`pair_<src>_<dst>.png`**. Optional `--out-summary`. **`--contour-all-pairs`** for contour files on every pair. |
+| Case study tracks (Figure 1) — command | `python3 scripts/compute_pair_overlap_from_daily.py --pairs artifacts/case_study_pairs.csv --daily-root "data/MMSI daily vessels " --top-k 4 --distance-km 25 --day-window 1 --max-files-per-year 0 --out-dir artifacts/plots/case_study_pairs --contour` |
+| Case study tracks — notes | **`--max-files-per-year 0`** uses all daily CSVs (default); smaller values can undercount vs `docs/candidate_case_studies.md`. **`--contour`**: KDE density map (`Spectral_r`). With **cartopy**: coastlines / land / cities. Outputs `pair_<src>_<dst>_contour.png` (+ tracks-only `.png`). Optional `--out-summary`, `--contour-all-pairs`. |
 | Ablations | `scripts/run_tgcn_improvement_suite.py` → `artifacts/tgcn_improvement_suite_summary.csv` |
-| August cooperation summary (Figure 4) | `PYTHONPATH=scripts python3 scripts/plot_cooperative_heatmap.py` — two-panel aggregate cooperation summary: stacked bar chart by gear group + flag-state breakdown (Aug 2017 short window). |
-| Eight-pair overlap CSV + optional heatmap PNG | Full command in **block below** (overlap CSV feeds **Tables 2–3** / Figures 2–3). |
-| Monthly overlap bubble chart (Figure 2) | `PYTHONPATH=scripts python3 scripts/plot_pair_overlap_time_series.py --overlap-csv artifacts/eight_pairs_overlap_by_month.csv --enrichment artifacts/cooperative_pairs_with_flag_gear.csv` — bubble chart of monthly close approaches, one row per pair. |
-| Six-vessel cluster map (Figure 3) | `PYTHONPATH=scripts python3 scripts/analyze_six_vessel_cluster.py --overlap-csv artifacts/eight_pairs_overlap_by_month.csv --enrichment artifacts/cooperative_pairs_with_flag_gear.csv` — geographic scatter with cartopy coastline, land fill, cities. |
+| August cooperation summary (not in report; see §4.4) | `PYTHONPATH=scripts python3 scripts/plot_cooperative_heatmap.py` — two-panel aggregate cooperation summary: stacked bar chart by gear group + flag-state breakdown (Aug 2017 short window). Output: `artifacts/plots/tgcn_daily_cooperation_heatmap.png`. |
+| Eight-pair overlap CSV + optional heatmap PNG | Full command in **block below** (overlap CSV feeds **Tables 2–3** / Figures 3–4). |
+| Monthly overlap bubble chart (Figure 3) | `PYTHONPATH=scripts python3 scripts/plot_pair_overlap_time_series.py --overlap-csv artifacts/eight_pairs_overlap_by_month.csv --enrichment artifacts/cooperative_pairs_with_flag_gear.csv` — bubble chart of monthly close approaches, one row per pair. |
+| Six-vessel cluster map (Figure 4) | `PYTHONPATH=scripts python3 scripts/analyze_six_vessel_cluster.py --overlap-csv artifacts/eight_pairs_overlap_by_month.csv --enrichment artifacts/cooperative_pairs_with_flag_gear.csv` — geographic scatter with cartopy coastline, land fill, cities. |
 | Enrichment CSV (for labels) | `artifacts/cooperative_pairs_with_flag_gear.csv` — `scripts/enrich_pairs_with_flag_gear.py` |
 | **Gear type definitions (for tables & figures)** | **Appendix A** (mirror for repo edits: `docs/gear_types.md`) |
 | **Notation / formal link-prediction setup** | **Appendix C** (symbol table; training vs validation distances) |
 | Gear × country pair-count heatmap (updated PNG) | `PYTHONPATH=scripts python3 scripts/plot_flag_gear_enrichment.py --input artifacts/cooperative_pairs_with_flag_gear.csv --out-dir artifacts/plots` |
+| Gear-aware re-ranking (Figure 2) | `PYTHONPATH=scripts python3 scripts/gear_aware_reranking.py` — enriches top-200 candidate MMSIs with gear type (96 sampled days), computes fleet co-location baselines (~7M cell-days), and produces gear-adjusted rankings + combined bar-chart-and-table figure. |
 | Candidates / close pairs | `artifacts/tgcn_candidate_scores_fullcoverage.parquet`, `artifacts/close_pairs_fullcoverage_25km_w1.csv` |
 
 **Eight-pair overlap heatmap — copy/paste (project root):**
@@ -350,39 +465,43 @@ PYTHONPATH=scripts python3 scripts/overlap_by_month_8pairs.py \
 
 ---
 
-### Appendix C — Notation and formal problem setup
+```{=latex}
+\clearpage
+```
 
-*This appendix supports §3.1. It is safe to **omit from slide decks** or to move after appendices A–B in a bound thesis if your program requires a fixed appendix order.*
+# Appendix C — Notation and formal problem setup {.unnumbered}
 
-#### C.1 Symbol glossary
+*This appendix condenses §3.1 for readers who want a symbol list. It may be **omitted in slide versions** or reordered after A–B if a thesis program requires a specific appendix sequence.*
+
+## Symbol glossary {.unnumbered}
 
 | Symbol | Meaning |
 |--------|---------|
-| \(t\) | A calendar **day** (time bucket) in the AIS timeline. |
-| \(\mathcal{T}\) | The set of days used after filtering (e.g., days with edges). |
-| \(V\) | Set of **nodes** (9-digit vessel **MMSIs** appearing in the extract). |
-| \(G_t = (V, E_t)\) | **Undirected** snapshot graph for day \(t\). |
-| \(E_t\) | **Edges** for day \(t\): proximity (§3.3) ± optional social edges (§3.3). |
-| \(u, v\) | Distinct nodes (unordered pair \(\{u,v\}\)). |
-| \(s_{u,v}\) | **Scalar score** (logit) for pair \((u,v)\) on a given forward pass / bucket. |
-| \(\mathbf{h}_u\) | **Embedding vector** for node \(u\) after the TGCN (dimension **32** in the primary run). |
-| \(\mathcal{T}_{\mathrm{train}}, \mathcal{T}_{\mathrm{test}}\) | **Chronological** partition of buckets (**~70% / ~30%**). |
+| $t$ | A calendar **day** (time bucket) in the AIS timeline. |
+| $\mathcal{T}$ | The set of days used after filtering (e.g., days with edges). |
+| $V$ | Set of **nodes** (9-digit vessel **MMSIs** appearing in the extract). |
+| $G_t = (V, E_t)$ | **Undirected** snapshot graph for day $t$. |
+| $E_t$ | **Edges** for day $t$: proximity (§3.3) ± optional social edges (§3.3). |
+| $u, v$ | Distinct nodes (unordered pair $\{u,v\}$). |
+| $s_{u,v}$ | **Scalar score** (logit) for pair $(u,v)$ on a given forward pass / bucket. |
+| $\mathbf{h}_u$ | **Embedding vector** for node $u$ after the TGCN (dimension **32** in the primary run). |
+| $\mathcal{T}_{\mathrm{train}}, \mathcal{T}_{\mathrm{test}}$ | **Chronological** partition of buckets (**~70% / ~30%**). |
 
-#### C.2 Graph semantics
+## Graph semantics {.unnumbered}
 
-For each \(t \in \mathcal{T}\), \(G_t = (V, E_t)\) is **undirected**: \(\{u,v\} \in E_t\) means the pair satisfies the **edge construction rule** for that day—**spatial proximity** within the **10 km** same-day threshold (and optional **same three-digit ITU MID** links), not “ground-truth cooperation.” Node set \(V\) may be defined globally from all MMSIs in the study period or induced per implementation; edges are **sparse** and may be **capped per bucket** for memory (§3.3).
+For each day $t \in \mathcal{T}$, the graph $G_t = (V, E_t)$ is **undirected**. An edge $\{u,v\} \in E_t$ means the vessels met the **construction rule** for that day—typically **same-day** positions within **10 km**, optionally plus **same three-digit MID** ties. Edges encode **graph structure**, not adjudicated cooperation. The vertex set $V$ may be fixed globally or built per implementation; $|E_t|$ is kept **sparse** and sometimes **capped per day** for memory (§3.3).
 
-#### C.3 Temporal link prediction objective (informal)
+## Temporal link prediction objective (informal) {.unnumbered}
 
-The model maps the sequence \(\{G_t\}\) (and optional **temporal node features**) to a recurrent hidden state and node embeddings. For each training snapshot, **positive** pairs are edges in \(E_t \cap \mathcal{T}_{\mathrm{train}}\); **negative** pairs are **sampled** from node pairs that are **not** positive for that snapshot (count matched to positives **per bucket** in code). Scores take the form \(s_{u,v} \propto \mathbf{h}_u^\top \mathbf{h}_v\) (inner product), optimized with **binary cross-entropy with logits** (BCEWithLogitsLoss) against labels \(y \in \{0,1\}\). **There is no label** for IUU, transshipment, or “cooperative”—only **structural** positives and **random** negatives.
+The model reads the sequence $\{G_t\}$ (with optional **temporal node features**) into recurrent states and node embeddings $\mathbf{h}_u$. On each training day in $\mathcal{T}_{\mathrm{train}}$, **positives** are edges present that day; **negatives** are sampled non-edges with counts matched **per day** in code. Pair logits follow $s_{u,v} \propto \mathbf{h}_u^\top \mathbf{h}_v$ and are trained with **binary cross-entropy with logits**. Labels encode **presence or absence of an edge**, not IUU or transshipment.
 
-**Evaluation.** On \(\mathcal{T}_{\mathrm{test}}\), the model ranks candidate pairs; **ROC AUC** and **Average Precision (AP)** summarize how well **observed** test edges rank above **non-edges** (per the evaluation script’s protocol). High scores mean **plausible future co-occurrence** under the graph definition, not culpability.
+**Evaluation.** On $\mathcal{T}_{\mathrm{test}}$, ROC AUC and AP measure how highly **true** test edges rank versus **non-edges** under the evaluation script’s protocol. Large values indicate **consistent ranking of observed contacts**, not legal liability.
 
-#### C.4 Training vs validation distances
+## Training vs validation distances {.unnumbered}
 
 | Stage | Typical distance / rule | Role |
 |-------|---------------------------|------|
-| **Graph edges (training signal)** | **≤ 10 km**, same **day** | Defines \(E_t\) for learning. |
+| **Graph edges (training signal)** | **$\leq$ 10 km**, same **day** | Defines $E_t$ for learning. |
 | **Candidate screening (post-hoc)** | **25 / 50 / 100 km**, optional **±1 day** | **Not** used as training labels; validates high-scoring pairs on raw tracks (§3.5). |
 
-This separation is repeated in §3.3–3.5 to avoid conflating **model inputs** with **analyst-facing** thresholds.
+Sections §3.3–3.5 repeat this distinction so **training edges** are not confused with **analyst thresholds** used afterward.

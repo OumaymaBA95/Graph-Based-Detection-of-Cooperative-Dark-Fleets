@@ -5,6 +5,10 @@ Temporal GCN (TGCN) baseline for time-split link prediction.
 - Builds graph snapshots per time bucket.
 - Trains a TGCN on training snapshots to predict edges.
 - Evaluates on the first test snapshot using embeddings from the final train snapshot.
+
+Utility helpers avoid importing ``torch_geometric_temporal`` at import time so
+other scripts work without ``torch_sparse``. ``main()`` trains ``TGCNPure`` (same
+T-GCN cell, ``GCNConv`` only) instead of the optional library wrapper.
 """
 import argparse
 import json
@@ -16,7 +20,8 @@ import numpy as np
 import pandas as pd
 import torch
 from torch_geometric.utils import degree
-from torch_geometric_temporal.nn.recurrent import TGCN
+
+from temporal_graph_baselines import TGCNPure
 
 import run_linear_gae_baseline as lgae
 
@@ -125,7 +130,7 @@ def main():
 
     snapshots = build_snapshot_edges(df, train_buckets)
 
-    model = TGCN(in_channels=1, out_channels=args.embedding_dim)
+    model = TGCNPure(in_channels=1, out_channels=args.embedding_dim)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     loss_fn = torch.nn.BCEWithLogitsLoss()
 

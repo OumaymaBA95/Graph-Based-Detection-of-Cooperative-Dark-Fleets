@@ -421,6 +421,61 @@ def load_mmsi_country_gear_map(enrich_path: Path | str) -> dict[int, tuple[str, 
     return out
 
 
+def merge_candidate_gear(
+    mmsi_map: dict[int, tuple[str, str]],
+    gear_enrich_path: Path | str,
+) -> dict[int, tuple[str, str]]:
+    """Fill missing gear ('—') in *mmsi_map* from an MMSI-level enrichment CSV.
+
+    Expects columns ``mmsi``, ``country``, ``dominant_gear``.
+    Only overwrites entries whose gear is currently '—' or empty.
+    Returns the same dict (mutated in-place) for convenience.
+    """
+    p = Path(gear_enrich_path)
+    if not p.exists():
+        return mmsi_map
+    df = pd.read_csv(p)
+    if "mmsi" not in df.columns or "dominant_gear" not in df.columns:
+        return mmsi_map
+    for _, r in df.iterrows():
+        m = int(r["mmsi"])
+        gear = _clean(str(r.get("dominant_gear", "")))
+        if not gear:
+            continue
+        ctry = _clean(str(r.get("country", ""))) or country_for_mmsi(m)
+        existing = mmsi_map.get(m)
+        if existing is None:
+            mmsi_map[m] = (ctry, gear)
+        elif existing[1] in ("", "—"):
+            mmsi_map[m] = (existing[0], gear)
+    return mmsi_map
+
+
+def merge_candidate_gear_into_pairs(
+    enrich: dict[tuple[int, int], dict[str, str]],
+    gear_enrich_path: Path | str,
+) -> dict[tuple[int, int], dict[str, str]]:
+    """Fill missing gear in pair-level enrichment dict from MMSI-level CSV."""
+    p = Path(gear_enrich_path)
+    if not p.exists():
+        return enrich
+    df = pd.read_csv(p)
+    if "mmsi" not in df.columns or "dominant_gear" not in df.columns:
+        return enrich
+    lookup: dict[int, str] = {}
+    for _, r in df.iterrows():
+        g = _clean(str(r.get("dominant_gear", "")))
+        if g:
+            lookup[int(r["mmsi"])] = g
+    for key, row in enrich.items():
+        src, dst = key
+        if not row["src_gear"] and src in lookup:
+            row["src_gear"] = lookup[src]
+        if not row["dst_gear"] and dst in lookup:
+            row["dst_gear"] = lookup[dst]
+    return enrich
+
+
 def mmsi_country_gear_line(mmsi: int, mmsi_map: dict[int, tuple[str, str]]) -> str:
     """Short label: country · gear (fallback ITU + —)."""
     c, g = mmsi_map.get(mmsi, (country_for_mmsi(mmsi), "—"))

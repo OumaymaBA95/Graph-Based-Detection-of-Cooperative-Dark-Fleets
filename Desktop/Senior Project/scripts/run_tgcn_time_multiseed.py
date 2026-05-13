@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """
-Run a temporal GNN (TGCN/GConvGRU/GConvLSTM) time-split baseline across
-multiple seeds and test buckets.
+Run a temporal GNN time-split baseline across multiple seeds and test buckets.
+
+Models ``gconvgru`` and ``gconvlstm`` import ``torch_geometric_temporal`` (needs
+``torch_sparse`` on many installs). ``tgcn_pyg`` is the same T-GCN cell using only
+``GCNConv`` (no ``torch_sparse``). Library ``tgcn`` still uses the optional
+``torch_geometric_temporal`` package when that stack is installed correctly.
 """
 import argparse
 import json
@@ -13,9 +17,9 @@ import numpy as np
 import pandas as pd
 import torch
 from torch_geometric.utils import degree
-from torch_geometric_temporal.nn.recurrent import GConvGRU, GConvLSTM, TGCN
 
 from build_temporal_node_features import build_temporal_node_features
+from temporal_graph_baselines import TemporalGCNGRU, TemporalGraphTransformerGRU, TGCNPure
 
 import run_linear_gae_baseline as lgae
 import run_tgcn_link_pred as tgcn_utils
@@ -104,12 +108,21 @@ def train_tgcn(
     cheb_k: int,
     static_features: torch.Tensor | None,
     use_hard_negatives: bool = False,
+    graph_transformer_heads: int = 4,
 ) -> torch.nn.Module:
     torch.manual_seed(seed)
     np.random.seed(seed)
 
     if model_name in {'gconvgru', 'gconvlstm'}:
         model = model_cls(in_channels=in_channels, out_channels=embedding_dim, K=cheb_k)
+    elif model_name == 'graph_transformer':
+        model = model_cls(
+            in_channels=in_channels,
+            out_channels=embedding_dim,
+            heads=graph_transformer_heads,
+        )
+    elif model_name == 'gcn':
+        model = model_cls(in_channels=in_channels, out_channels=embedding_dim)
     else:
         model = model_cls(in_channels=in_channels, out_channels=embedding_dim)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
@@ -301,8 +314,27 @@ def main():
     ap.add_argument('--lr', type=float, default=0.01)
     ap.add_argument('--test-ratio', type=float, default=0.3)
     ap.add_argument('--seeds', default='1,2,3')
-    ap.add_argument('--model', default='tgcn', choices=['tgcn', 'gconvgru', 'gconvlstm'])
-    ap.add_argument('--cheb-k', type=int, default=2)
+    ap.add_argument(
+        '--model',
+        default='tgcn',
+        choices=['tgcn', 'tgcn_pyg', 'gconvgru', 'gconvlstm', 'gcn', 'graph_transformer'],
+        help=(
+            "Recurrent graph model. 'tgcn_pyg' = T-GCN cell (GCNConv only, no torch_sparse). "
+            "'gcn' = two GCNConv + GRUCell; 'graph_transformer' = two TransformerConv + GRUCell."
+        ),
+    )
+    ap.add_argument(
+        '--cheb-k',
+        type=int,
+        default=2,
+        help='Chebyshev order K for GConvGRU / GConvLSTM only.',
+    )
+    ap.add_argument(
+        '--gt-heads',
+        type=int,
+        default=4,
+        help='Attention heads for --model graph_transformer (TransformerConv).',
+    )
     ap.add_argument('--use-temporal-node-features', action='store_true')
     ap.add_argument('--use-vessel-day-features', action='store_true')
     ap.add_argument('--use-hard-negatives', action='store_true', help='Use 2-hop hard negative sampling')
@@ -328,7 +360,22 @@ def main():
     df = tgcn_utils.load_edges_with_time(Path(args.edges), years)
     buckets = sorted(df['time_bucket'].unique())
     seeds = [int(s.strip()) for s in args.seeds.split(',') if s.strip()]
-    model_cls = {'tgcn': TGCN, 'gconvgru': GConvGRU, 'gconvlstm': GConvLSTM}[args.model]
+    if args.model == 'tgcn_pyg':
+        model_cls = TGCNPure
+    elif args.model in {'tgcn', 'gconvgru', 'gconvlstm'}:
+        from torch_geometric_temporal.nn.recurrent import GConvGRU, GConvLSTM, TGCN
+
+        model_cls = {
+            'tgcn': TGCN,
+            'gconvgru': GConvGRU,
+            'gconvlstm': GConvLSTM,
+        }[args.model]
+    elif args.model == 'gcn':
+        model_cls = TemporalGCNGRU
+    elif args.model == 'graph_transformer':
+        model_cls = TemporalGraphTransformerGRU
+    else:
+        raise ValueError(f'Unknown model: {args.model!r}')
 
     use_cv = args.cv_folds and args.cv_folds >= 2
     if use_cv:
@@ -392,6 +439,7 @@ def main():
                 cheb_k=args.cheb_k,
                 static_features=static_features,
                 use_hard_negatives=args.use_hard_negatives,
+                graph_transformer_heads=args.gt_heads,
             )
 
             hidden = rollout_hidden(
@@ -448,17 +496,31 @@ def main():
             'per_seed': per_seed,
         })
 
-    fold_aucs = [f['overall']['roc_auc_mean'] for f in per_fold]
-    fold_aps = [f['overall']['average_precision_mean'] for f in per_fold]
-    overall = {
-        'roc_auc_mean': float(np.mean(fold_aucs)) if fold_aucs else float('nan'),
-        'roc_auc_std': float(np.std(fold_aucs)) if fold_aucs else float('nan'),
-        'average_precision_mean': float(np.mean(fold_aps)) if fold_aps else float('nan'),
-        'average_precision_std': float(np.std(fold_aps)) if fold_aps else float('nan'),
-        'seeds': seeds,
-        'cv_folds': len(per_fold) if use_cv else 0,
-        'buckets_evaluated': int(np.mean([f['overall']['buckets_evaluated'] for f in per_fold])) if per_fold else 0,
-    }
+    # Single train/test split: std across *seeds* (in per_fold[0].overall). Multi-fold
+    # CV: std across *fold means*; seed-level detail stays under each fold.
+    if len(per_fold) == 1:
+        fo = per_fold[0]['overall']
+        overall = {
+            'roc_auc_mean': fo['roc_auc_mean'],
+            'roc_auc_std': fo['roc_auc_std'],
+            'average_precision_mean': fo['average_precision_mean'],
+            'average_precision_std': fo['average_precision_std'],
+            'seeds': seeds,
+            'cv_folds': len(per_fold) if use_cv else 0,
+            'buckets_evaluated': fo['buckets_evaluated'],
+        }
+    else:
+        fold_aucs = [f['overall']['roc_auc_mean'] for f in per_fold]
+        fold_aps = [f['overall']['average_precision_mean'] for f in per_fold]
+        overall = {
+            'roc_auc_mean': float(np.mean(fold_aucs)) if fold_aucs else float('nan'),
+            'roc_auc_std': float(np.std(fold_aucs)) if fold_aucs else float('nan'),
+            'average_precision_mean': float(np.mean(fold_aps)) if fold_aps else float('nan'),
+            'average_precision_std': float(np.std(fold_aps)) if fold_aps else float('nan'),
+            'seeds': seeds,
+            'cv_folds': len(per_fold) if use_cv else 0,
+            'buckets_evaluated': int(np.mean([f['overall']['buckets_evaluated'] for f in per_fold])) if per_fold else 0,
+        }
 
     report = {
         'edges': args.edges,
@@ -467,10 +529,13 @@ def main():
         'epochs': args.epochs,
         'lr': args.lr,
         'cheb_k': args.cheb_k,
+        'gt_heads': args.gt_heads,
         'use_temporal_node_features': args.use_temporal_node_features,
         'use_vessel_day_features': args.use_vessel_day_features,
+        'use_hard_negatives': args.use_hard_negatives,
+        'max_train_buckets': args.max_train_buckets,
+        'max_test_buckets': args.max_test_buckets,
         'feature_cols': args.feature_cols,
-        'in_channels': in_channels,
         'test_ratio': args.test_ratio,
         'cv_folds': args.cv_folds if use_cv else 0,
         'cv_min_train_ratio': args.cv_min_train_ratio if use_cv else None,

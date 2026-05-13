@@ -1,0 +1,1798 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setlength{\emergencystretch}{4em}
+\usepackage{etoolbox}
+\makeatletter
+\renewcommand{\maketitle}{\begin{titlepage}\centering\vspace*{1.1in}{\LARGE\bfseries\@title\par}\vspace{2.25em}{\large\@author\par}\vspace{1em}{\normalsize\textit{Faculty Advisor: Dr. Ali Duman}\par}\vspace{0.6em}{\normalsize\textit{Committee Members: Dr. Katherine Shoemaker, Dr. Timothy Redl}\par}\vfill\end{titlepage}\clearpage}
+\makeatother
+\apptocmd{\tableofcontents}{\clearpage}{}{}
+\AtBeginEnvironment{longtable}{\footnotesize\setlength{\tabcolsep}{4pt}}
+\setlength{\hfuzz}{6pt}
+\IfFileExists{fvextra.sty}{\usepackage{fvextra}\RecustomVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\},breaklines=true,breakanywhere=true}}{}
+\AtBeginDocument{\sloppy}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Graph-Based Screening for Potentially Cooperative Vessel Pairs},
+  pdfauthor={Oumayma Ben Aoun},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Graph-Based Screening for Potentially Cooperative Vessel Pairs}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{A temporal link prediction approach using AIS (2012--2019)}
+\author{Oumayma Ben Aoun}
+\date{}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\section*{Abstract}\label{abstract}
+\addcontentsline{toc}{section}{Abstract}
+
+Illegal, unreported, and unregulated (IUU) fishing has increased
+interest in tools that surface vessels that may operate in a coordinated
+way. This project develops an \textbf{unsupervised} screening pipeline
+built on Automatic Identification System (AIS) data (2012--2019). Each
+day is represented as a graph of vessels; a \textbf{Temporal Graph
+Convolutional Network (TGCN)} performs \textbf{temporal link prediction}
+so that pairs that plausibly co-occur in the future rank highly. Raw
+tracks are then checked independently with simple geographic rules to
+prioritize pairs for analyst review. \textbf{Training graph edges}
+connect vessels whose positions fall within \textbf{10 km} on the
+\textbf{same calendar day}. Wider distance checks (for example
+\textbf{25 km}) are used only \textbf{after} scoring to validate
+candidates---they are \textbf{not} training labels. The model does
+\textbf{not} receive labels for ``cooperative'' behavior; it learns from
+\textbf{structure and timing} in the graphs and produces
+\textbf{candidates for review}, not adjudicated outcomes.
+
+\textbf{Main quantitative result (Table 1):} On the \textbf{combined}
+graph---proximity edges plus optional \textbf{social} edges linking
+vessels that share the same three-digit maritime identifier (MID)
+prefix, implemented with a corrected MID rule---a reproducible laptop
+configuration (\textbf{1450} training days, 3 epochs, seed 1) achieves
+\textbf{ROC AUC = 0.72997} and \textbf{average precision (AP) = 0.71381}
+on \textbf{876} held-out daily test buckets
+(\texttt{artifacts/tgcn\_social\_maxb1450\_ep3.json}). A
+\textbf{proximity-only} ablation on the same edge timeline reaches
+higher scores (about \textbf{0.78} AUC) but on a much smaller
+\textbf{20-bucket evaluation slice}; it is reported in Table 1 as a
+\textbf{directional ablation}, not a like-for-like headline. A narrow
+\textbf{August 2017} window was used early for exploration; its metrics
+\textbf{cannot} be compared with the full 2012--2019 benchmark, and this
+report does not include figures from that window. After strict
+\textbf{25 km} and \textbf{±1 day} screening, \textbf{eight} pairs
+remain of interest; a \textbf{gear-aware} follow-up analysis suggests
+that many \textbf{excluded} top candidates resemble routine same-fleet
+trawler co-location rather than unusual encounters. We \textbf{do not}
+assert legal conclusions or membership in any ``dark fleet.''
+
+\textbf{Takeaways.} \textbf{(i)} Modest absolute scores are
+\textbf{expected} for an unsupervised, label-free screening task on
+global AIS, and the ±0.10 day-to-day spread is a property of the domain
+rather than a flaw of the model. \textbf{(ii)} \textbf{Post-hoc}
+\textbf{25 km / ±1 day} geography matters because \textbf{10 km}
+same-day graph structure can elevate fleet-like pairs that rarely meet
+the tighter physical standard; the geographic filter separates
+\textbf{fleet-scale similarity} from \textbf{pair-level proximity}.
+\textbf{(iii)} \textbf{How} registry information enters the graph
+matters as much as \textbf{whether} it does: dense same-MID social edges
+add noise, encourage over-smoothing, and compete with proximity in the
+loss---future work should fuse registry context as \textbf{node
+features} or as \textbf{typed edges} instead. \textbf{(iv)} The
+deliverable is a \textbf{short, auditable} list (top-200 → 8 geography
+survivors, \textasciitilde4\%; as a group, cross-gear pairs survive at
+\textasciitilde5.1\% vs 2.4\% for trawler--trawler, and the best
+cross-gear category at \textasciitilde10× the trawler--trawler rate)
+with \textbf{tracks and overlap plots}---\textbf{prioritized leads} plus
+\textbf{supporting context}, \textbf{not} a determination of misconduct.
+
+\textbf{Keywords:} AIS, IUU fishing, temporal graph neural networks,
+link prediction, vessel co-movement
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Introduction}\label{introduction}
+
+\textbf{Problem.} Fisheries enforcement and marine research often need
+to narrow attention to vessel pairs that may interact at sea---whether
+through transshipment, repeated joint presence, or other coordinated
+patterns sometimes associated with periods of missing AIS (``dark''
+behavior). AIS offers broad spatial and temporal coverage, yet
+\textbf{explicit labels for cooperation are seldom available} in
+operational datasets.
+
+\textbf{What this work does.} We cast screening as \textbf{temporal link
+prediction} on \textbf{daily} graphs of vessels. Pairs that receive high
+scores under this objective are \textbf{candidates} for closer
+inspection. We support that step with straightforward \textbf{post-hoc}
+checks: distances between \textbf{daily mean positions}, maps of raw
+tracks, and summaries of overlap over time.
+
+\textbf{What this work does not do.} This pipeline does \textbf{not}
+establish coordination, wrongdoing, or IUU activity. It yields a
+\textbf{ranked list} and \textbf{supporting geographic context} intended
+for expert review.
+
+\textbf{Contributions (short).}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  An end-to-end, reproducible workflow: AIS records → daily graphs →
+  TGCN with optional temporal node features → chronological train/test
+  split.\\
+\item
+  A \textbf{three-digit MID--consistent} design for combining proximity
+  edges with same-prefix \textbf{social} edges
+  (\texttt{scripts/mmsi\_mid.py},
+  \texttt{scripts/add\_social\_edges.py}).\\
+\item
+  Reported metrics on \textbf{full-coverage} graphs within
+  \textbf{practical laptop memory} limits (training is capped by day
+  count where necessary).\\
+\item
+  Interpretation beyond raw scores: geographic filters, overlap
+  visualizations for eight validated pairs, and \textbf{gear-aware
+  stratification} (§4.2.1) that compares candidates to fleet-wide
+  co-location patterns so that routine fleet behavior can be
+  distinguished from unusual pairs.
+\end{enumerate}
+
+\textbf{Roadmap.} Section~3 presents \textbf{methods}: formal setup
+(\textbf{Appendix C}), \textbf{data}, \textbf{graph construction} (10~km
+proximity plus optional MID-based social edges), \textbf{training}, and
+\textbf{validation-only} distance rules. Section~4 presents
+\textbf{results}: headline metrics (\textbf{Table~1}), an encoder
+comparison (\textbf{GCN} vs.~\textbf{graph transformer}) on a
+\textbf{smaller capped} graph (§4.1.1; distinct from the full-coverage
+experiments in Table~1), geographic and case-study material
+(\textbf{Tables~2--3}, Figures~1--4), and gear definitions
+(\textbf{Appendix~A}). Section~5 discusses limitations (grouped under
+task, data, evaluation, and deployment) and ends with a short
+\textbf{synthesis}; Section~6 concludes; \textbf{Appendix~B} collects
+reproduction commands.
+
+\begin{quote}
+\textbf{For readers and committees (three sentences).} (1)
+\textbf{Training} graphs use \textbf{10~km} same-day proximity (plus
+optional MID social edges); \textbf{25~km} and wider screens are
+\textbf{validation}, not supervised labels. (2) The headline
+\textbf{0.72997 / 0.71381} values apply to the \textbf{combined}
+full-coverage row in \textbf{Table~1}; \textbf{proximity-only} and
+\textbf{capped} settings are \textbf{separate experiments}---see §3.6.
+(3) \textbf{Figure~2} uses 2012--2019 fleet context to show that many
+high-scoring pairs align with ordinary fleet co-location; the
+\textbf{eight} pairs that pass strict geography stand out relative to
+that background.
+\end{quote}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Related work}\label{related-work}
+
+\textbf{Fisheries monitoring and AIS.} Research on illegal, unreported,
+and unregulated (IUU) fishing and on coordinated vessel behavior makes
+heavy use of \textbf{Automatic Identification System (AIS)} data to
+characterize fishing effort and vessel encounters (see References for
+global fisheries footprint and transshipment studies). AIS alone does
+not encode whether two vessels cooperated or broke rules; analysts
+usually combine tracks with \textbf{proximity logic}, \textbf{registry
+information}, or \textbf{enforcement intelligence}. That limitation
+motivates methods that \textbf{rank pairs without cooperation labels}.
+
+\textbf{AIS-based fisheries and encounter analytics.} Beyond mapping
+where vessels go, AIS supports \textbf{encounter analysis} and
+\textbf{behavioral screening} (e.g., transshipment and
+loitering---Miller et al., 2018; assessments of monitoring
+systems---Park et al., 2020). Much of that work uses \textbf{explicit
+rules} or \textbf{supervised} signals when labels exist. Here the
+learning stage remains \textbf{unsupervised}; geographic checks enter
+only as \textbf{post-hoc} validation.
+
+\textbf{Graph learning and link prediction.} Vessel co-presence maps
+naturally to a \textbf{graph}: nodes are vessels; edges encode same-day
+proximity (and here, optional ties based on registry prefix).
+\textbf{Graph convolutional networks} (Kipf \& Welling, 2017) and
+\textbf{inductive} neighborhood models (Hamilton et al., 2017) learn
+node embeddings from topology and features. \textbf{Link prediction}
+ranks missing or future edges (Lü \& Zhou, 2011). When the graph changes
+over time, \textbf{temporal} formulations apply---for example
+spatio-temporal convolutions (Yu et al., 2018) or recurrent temporal
+graph networks (Rossi et al., 2020). Our model follows a
+\textbf{TGCN}-style recurrent update over daily snapshots and scores
+pairs with an \textbf{inner-product} link head (§3.4).
+
+\textbf{Evaluation philosophy.} Train and test sets split
+\textbf{calendar days} in chronological order: the model trains on
+earlier periods and is scored on \textbf{later} periods. ROC AUC and
+average precision therefore reflect \textbf{forward-looking} ranking
+quality. Random mixing of days across time would ignore drift and could
+\textbf{inflate} scores; we avoid that design.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Methods}\label{methods}
+
+\subsection{Problem formulation}\label{problem-formulation}
+
+Fix a \textbf{calendar day} (time bucket) \(t\). Let \(G_t = (V, E_t)\)
+be an \textbf{undirected} graph for that day: \textbf{vertices} \(V\)
+are vessel identifiers (\textbf{MMSIs}); \textbf{edges} \(E_t\) are
+built as in §3.3---mainly pairs whose positions lie within
+\textbf{10~km} great-circle distance on day \(t\), optionally augmented
+by \textbf{social} edges between vessels sharing the same
+\textbf{three-digit MID} prefix. The learning problem is
+\textbf{temporal link prediction}: a \textbf{TGCN} maps the sequence of
+graphs to node embeddings; \textbf{pair scores} are inner products of
+embeddings. Training minimizes \textbf{binary cross-entropy with logits}
+so that \textbf{observed} edges score above \textbf{randomly sampled
+non-edges} on each day. There is \textbf{no} label for ``cooperative''
+fishing---only structural positives and negatives (see
+\texttt{scripts/run\_tgcn\_time\_multiseed.py}; architecture §3.4).
+\textbf{Training} and \textbf{test} sets split \textbf{days} in time
+order (\textbf{about 70\% / 30\%}). \textbf{ROC AUC} and \textbf{AP}
+summarize ranking quality on \textbf{future} test days.
+
+\textbf{Appendix C} collects \textbf{notation}, repeats the formal
+picture for readers who prefer a tabular glossary, and distinguishes
+\textbf{10~km training edges} from \textbf{validation-only} distances.
+
+\subsection{Data and time buckets}\label{data-and-time-buckets}
+
+AIS records cover \textbf{2012--2019} at \textbf{daily} aggregation (on
+the order of \textbf{2.38 billion} vessel--day rows, with sea-surface
+temperature merged where available). The study timeline is partitioned
+into \textbf{one graph per calendar day}; \textbf{876} days carry the
+edge data used for the primary evaluation.
+
+\subsection{Graph construction}\label{graph-construction}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Nodes:} one per \textbf{MMSI} (vessel identifier).\\
+\item
+  \textbf{Proximity edges:} same \textbf{calendar day},
+  \textbf{Haversine} distance at most \textbf{10~km} between
+  \textbf{daily} position summaries for the two vessels. The
+  full-coverage list \texttt{edges\_2012\_2019\_full.parquet} is
+  produced by \texttt{scripts/build\_temporal\_graph\_baseline.py}. Some
+  builds \textbf{limit edges per day} to fit in memory; see
+  \texttt{README.md} for commands tied to each artifact.\\
+\item
+  \textbf{Social edges:} undirected ties between vessels that share the
+  \textbf{same three-digit ITU MID} prefix.
+  \textbf{\texttt{scripts/mmsi\_mid.py}} extracts the prefix so it is
+  not truncated at six digits. Social edges are \textbf{capped per day}
+  (for example \textbf{2000} per bucket in
+  \texttt{scripts/add\_social\_edges.py}) so that graphs remain
+  tractable.\\
+\item
+  \textbf{Combined (proximity + social)} benchmark list:
+  \texttt{artifacts/edges\_full\_with\_social.parquet}.
+\end{itemize}
+
+\textbf{Validation distances (not training edges).} Candidate review
+uses \textbf{25 / 50 / 100~km} thresholds (and sometimes \textbf{±1~day}
+alignment) on \textbf{daily mean} positions. These rules \textbf{do not}
+define training edges and are \textbf{not} the same as the
+\textbf{10~km} edge construction; see §3.5.
+
+\subsection{Model and training
+objective}\label{model-and-training-objective}
+
+\textbf{Architecture.} A Temporal Graph Convolutional Network
+(\textbf{TGCN}) with optional \textbf{temporal node features} derived
+from recent graph statistics (degree, interaction counts, partner
+diversity, recency, gaps between events---built in
+\texttt{scripts/build\_temporal\_node\_features.py}; summarized in
+\texttt{README.md}).
+
+\textbf{Training details (primary laptop benchmark).} Unless stated
+otherwise: \textbf{embedding size 32}, \textbf{Adam}, learning rate
+\textbf{0.001}, \textbf{3} passes over training days in order,
+\textbf{binary cross-entropy with logits} with one \textbf{random
+non-edge} sampled per positive edge \textbf{per day}. Chronological
+split \textbf{about 70\% train / 30\% test}
+(\texttt{-\/-test-ratio\ 0.3}). For the headline \textbf{combined} graph
+run, training was limited to \textbf{1450} days because \textbf{larger}
+day counts exceeded available \textbf{RAM} on the laptop and led to
+out-of-memory termination.
+
+\textbf{Evaluation.} \textbf{ROC AUC} and \textbf{AP} are computed on
+\textbf{held-out test days}. The implementation drops or masks edges so
+that the test loss does not reuse training positives in a trivial way
+(see comments in the TGCN scripts).
+
+\textbf{Computational cost.} Experiments used one \textbf{laptop} (Apple
+M-series, \textbf{16~GB} unified memory). The main combined-graph run
+(\textbf{1450} train days, \textbf{3} epochs) typically finished in
+\textbf{20--40~minutes} depending on system load; \textbf{peak memory}
+was about \textbf{12--14~GB}, which explains why caps near \textbf{1480}
+days triggered failures. Proximity-only full graphs were trained under
+similar limits. Smaller capped graphs and the brief August~2017 run
+finished in \textbf{under five minutes} each. All computation was
+\textbf{CPU-only} (PyTorch). Timing and memory are \textbf{indicative};
+scripts do not log wall-clock or RSS automatically, so exact timings
+require a controlled rerun.
+
+\subsection{Heuristic validation (not supervised
+labels)}\label{heuristic-validation-not-supervised-labels}
+
+For scored pairs we measure \textbf{great-circle distance} between
+\textbf{daily mean positions} and count days falling within \textbf{25 /
+50 / 100~km} (and optional \textbf{±1~day} alignment). These steps
+describe \textbf{where} vessels were relative to each other; they
+\textbf{do not} define the learning objective. §4.2.1 adds
+\textbf{gear-aware} context by comparing candidates to
+\textbf{fleet-wide} co-location patterns.
+
+\subsection{Which numbers are ``the same
+experiment''?}\label{which-numbers-are-the-same-experiment}
+
+Treat each row below as a \textbf{distinct} experimental
+setting---\textbf{do not} combine metrics across rows:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5714}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.4286}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Setting
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Role
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{2012--2019 combined graph (proximity + social)} &
+\textbf{Primary benchmark}---full timeline, social edges, reported
+AUC/AP on 876 test buckets. \\
+\textbf{Proximity-only graph} & \textbf{Ablation}---no social edges;
+often higher AUC on this codebase; shows contribution of the social
+layer. \\
+\textbf{Capped / smaller graphs} & \textbf{Sanity checks and
+tuning}---easier prediction; \textbf{very high} AUC; \textbf{not} the
+same difficulty as full global coverage. \\
+\textbf{August 2017 short window} & \textbf{Exploratory only}---few
+buckets; metrics are \textbf{not} comparable to the main table. No
+figures from this window appear in the final report. \\
+\end{longtable}
+}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Results}\label{results}
+
+The presentation follows a standard empirical flow: \textbf{overall
+scores} (§4.1), \textbf{maps and interpretation} (§4.2--4.3), and a
+brief \textbf{exploratory} slice from August~2017 (§4.4). As emphasized
+in §3.6, \textbf{each row of Table~1} corresponds to a
+\textbf{different} graph setup---scores from different rows
+\textbf{cannot} be merged into one narrative.
+
+\subsection{Quantitative performance
+(TGCN)}\label{quantitative-performance-tgcn}
+
+\textbf{Headline numbers, in one place.} On the full \textbf{2012--2019}
+combined graph the primary laptop run reports \textbf{ROC AUC = 0.72997}
+and \textbf{AP = 0.71381} on \textbf{876} held-out daily test buckets.
+The \textbf{proximity-only} ablation on the same edge timeline reaches
+\textbf{0.77618 / 0.79549}, but on a much smaller \textbf{20-bucket
+evaluation slice} (single-seed, 5 epochs); it is reported as a
+\textbf{directional ablation}, not a like-for-like headline. The smaller
+\textbf{capped} graph used for tuning reaches roughly \textbf{0.95 /
+0.96}, and a \textbf{5-fold rolling} version of that capped setup gives
+\textbf{0.927 ± 0.067 / 0.947 ± 0.048} across seeds \textbf{1--5}.
+\textbf{Table 1} collects every setting in one block; the rest of this
+section explains how to read each row.
+
+\textbf{Table 1.} All TGCN results in one place. Each row is a
+\textbf{different} experiment---do not mix metrics across rows (§3.6).
+Parquet filenames are omitted here so the table fits the page; see §3
+(graph construction) and \textbf{Appendix B} (reproducibility) for full
+paths.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1698}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.3585}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2075}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1698}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.0943}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Setting
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Train / eval scope
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Test buckets
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+ROC AUC
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AP
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Proximity-only, full coverage edges & full 2012--2017-08 train; eval on
+a \textbf{20-bucket} slice (single seed, 5 epochs) & 20 &
+\textbf{0.77618} & \textbf{0.79549} \\
+\textbf{Combined + social --- primary laptop run} & \textbf{1450} train
+buckets, 3 epochs, seed 1 & \textbf{876} & \textbf{0.72997} &
+\textbf{0.71381} \\
+Capped graph (single seed) & tuning / easier task & --- &
+\textasciitilde0.95 & \textasciitilde0.96 \\
+Capped graph, 5-fold rolling CV & seeds 1--5 & --- & 0.927 ± 0.067 &
+0.947 ± 0.048 \\
+August 2017 (case-study window) & exploratory short window & 5 &
+\textasciitilde0.56 & \textasciitilde0.67 \\
+\end{longtable}
+}
+
+\textbf{How to read Table 1.} \textbf{The only headline number is the
+combined+social row} (\textbf{0.72997 / 0.71381} on \textbf{876} test
+buckets). The proximity-only row sits at \textbf{0.77618 / 0.79549} but
+on a \textbf{20-bucket evaluation slice}---roughly \textbf{40× fewer}
+test days---so the higher value is \textbf{directional, not
+like-for-like}: it says proximity edges score better than
+proximity+social on these days, but does not say a fully comparable
+proximity-only run would land at 0.78. The \textbf{capped} rows look
+much higher because the graph is a \textbf{smaller, denser subset} that
+is structurally easier to predict; they are reported only to support
+\textbf{tuning} and \textbf{multi-seed sanity checks}, not as
+alternative headlines. The \textbf{August 2017} row covers a
+\textbf{5-day} window used for early exploration and gear enrichment
+(§4.4); it is intentionally \textbf{not} comparable to the main rows.
+
+\textbf{Are these numbers good?} For an \textbf{unsupervised,
+label-free} screening task on \textbf{global AIS} with millions of
+node-day combinations, \textbf{AUC around 0.73} with \textbf{AP around
+0.71} is in line with what should be expected. The \textbf{AP} result is
+the more telling figure: on a sparse temporal graph where the vast
+majority of candidate pairs are non-edges, an AP near \textbf{0.71}
+corresponds to a model that consistently surfaces real co-occurrence
+near the top of its rankings---well above the \textbf{prevalence
+baseline} that random ranking would yield. The proximity-only
+\textbf{directional ablation} (\textasciitilde{}\textbf{0.78} AUC on a
+20-bucket evaluation slice---see Table 1 caveat) hints at an upper bound
+on what this architecture can extract from purely geographic structure;
+closing the remaining gap will likely require \textbf{architectural
+changes}, not just longer training (see ``Why do social edges lower
+AUC?'' below and §6).
+
+\textbf{Day-to-day variability is a property of the domain, not a bug.}
+The per-bucket standard deviations of about \textbf{±0.103} ROC AUC and
+\textbf{±0.106} AP across the \textbf{876} test days mean that
+\textbf{some days are genuinely easier than others}: graphs are denser
+when vessels concentrate on seasonal grounds and sparser during transit
+windows; weather, holidays, and policy changes also shift activity. A
+\textbf{macro-average} of \textbf{0.73 / 0.71} across that distribution
+is the right summary; a stable model on global AIS should not produce
+identical performance every single day, and one that did would be a flag
+for \textbf{leakage} rather than for skill.
+
+\textbf{Operationally relevant top-N behavior.} For a screening tool the
+practical question is: of the pairs the model ranks highest, \textbf{how
+many} survive an analyst's independent geographic test? Among the
+\textbf{top 200} pairs from the full-coverage combined-graph run,
+\textbf{eight} clear the strict \textbf{25 km / ±1 day} rule on raw
+daily means---a roughly \textbf{4\%} survival rate on the long list
+(Table 2; §4.2)---well above the underlying prevalence of repeated 25 km
+contacts among \textbf{all} active pairs, which is orders of magnitude
+smaller. The \textbf{gear-aware} stratification in §4.2.1 tightens this
+further: as a \textbf{group}, cross-gear combinations survive at
+\textbf{5.1\%} versus \textbf{2.4\%} for trawler--trawler (a
+\textasciitilde2× aggregate effect), and at the \textbf{extremes} the
+best cross-gear category (\textbf{Fixed gear + Trawlers}) survives at
+\textbf{25\%}---roughly \textbf{10×} the trawler--trawler rate. The full
+funnel is summarized below.
+
+\textbf{Table 1b --- Operational funnel (combined graph, full-coverage
+run).} A precision-at-K-style summary of how the top-200 ranked
+candidates collapse to an analyst-reviewable list. Numbers come from the
+same primary run as Table 1 (\texttt{tgcn\_social\_maxb1450\_ep3.json})
+and the gear-aware analysis in §4.2.1.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1591}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1591}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.6818}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Stage
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Pairs
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Pass rate vs.~previous stage
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Top-200 model-ranked candidates (input list) & 200 & --- \\
+Pass strict \textbf{25 km / ±1 day} geographic filter & \textbf{8} &
+\textbf{4.0\%} of 200 \\
+~~--- within passing set: \textbf{cross-gear} pairs & 6 & \textbf{5.1\%}
+of 118 cross-gear candidates \\
+~~--- within passing set: \textbf{trawler--trawler} pairs & 2 &
+\textbf{2.4\%} of 82 trawler--trawler candidates \\
+Highest-discriminating cross-gear category: \textbf{Fixed gear +
+Trawlers} & 1 / 4 & \textbf{25.0\%} (\textasciitilde10×
+trawler--trawler) \\
+\end{longtable}
+}
+
+ROC AUC and AP are reported in Table 1 because they are standard, but
+the \textbf{top-200 → geography → gear-context} funnel is what makes the
+output usable for an analyst.
+
+\textbf{Primary run details (combined row).} Embedding size \textbf{32},
+learning rate \textbf{0.001}, temporal node features \textbf{on}.
+Primary outputs: \texttt{tgcn\_social\_maxb1450\_ep3.json} plus the
+companion \texttt{.csv} in \texttt{artifacts/}. Raising the training day
+cap from \textbf{400} toward \textbf{1450} improved metrics until
+\textbf{RAM} limited further growth (roughly \textbf{1480--1500} days
+caused failure). Other tuning experiments are summarized in
+\texttt{tgcn\_improvement\_suite\_summary.csv} (same folder).
+
+\textbf{Proximity-only row (directional ablation).} Values
+\textbf{0.77618 / 0.79549} come from
+\texttt{tgcn\_time\_temporal\_nodes\_fullcoverage.json} in
+\texttt{artifacts/}. That run used the full \textbf{2012--2019} edge
+file and trained up to the same train/test cutoff, but
+\textbf{evaluated} on only a \textbf{20-bucket evaluation slice} (versus
+\textbf{876} buckets for the combined run); reporting it alongside the
+combined headline is informative for \textbf{direction} (proximity edges
+score higher than proximity+social on these days) but the
+\textbf{absolute} numbers are not directly comparable. Re-running the
+proximity-only configuration on the full \textbf{876}-bucket horizon is
+queued under §6.
+
+\textbf{Variability and uncertainty.} The headline combined result uses
+\textbf{one} random seed (seed~\textbf{1}); a full multi-seed interval
+for that full-coverage row is \textbf{explicitly noted as future work}
+in §6. Two views of spread are already available and are reported as a
+partial substitute:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Day-to-day spread (within one seed).} Over the \textbf{876}
+  test days, standard deviations of \textbf{per-day} ROC AUC and AP are
+  about \textbf{±0.103} and \textbf{±0.106}. Easy and hard days coexist;
+  the reported \textbf{0.72997 / 0.71381} is a \textbf{macro-average}
+  over days, not a promise about every individual day. The breadth of
+  this spread is itself a feature of the domain---seasonal grounds,
+  weather, holidays, and policy changes all shift activity---and a model
+  that produced identical performance on every test day would be a flag
+  for \textbf{leakage} rather than for skill. Per-day CSV:
+  \texttt{tgcn\_social\_maxb1450\_ep3.csv} in \texttt{artifacts/}.
+\item
+  \textbf{Cross-seed spread on a capped graph.} A \textbf{5-fold}
+  rolling validation with seeds \textbf{1--5} on the smaller capped
+  graph gives \textbf{0.927 ± 0.067} AUC and \textbf{0.947 ± 0.048} AP
+  (Table 1). Cross-seed variance there is modest, which is
+  \textbf{suggestive but not conclusive} that seed effects on the
+  full-coverage row would be smaller than the day-to-day effects above.
+  Re-running the headline configuration with \textbf{at least 3--5
+  seeds} is the single most useful next experiment for this report and
+  is a top item in §6.
+\end{itemize}
+
+\subsubsection{GCN vs.~graph
+transformers}\label{gcn-vs.-graph-transformers}
+
+Keeping the §3.4 training recipe fixed, \textbf{only} the
+\textbf{per-day graph encoder} changes. Training driver:
+\texttt{run\_tgcn\_time\_multiseed.py}. Encoder code:
+\texttt{temporal\_graph\_baselines.py} in the \texttt{scripts/} tree.
+\textbf{two \texttt{GCNConv} layers + GRU} versus \textbf{two
+\texttt{TransformerConv} layers + GRU}, with the same
+\textbf{dot-product} link head. \textbf{``Graph transformer''} here
+means \textbf{neighbor attention} through
+\textbf{\texttt{TransformerConv}} at each snapshot---not
+\textbf{full-graph} self-attention over all vessels (that would be
+\textbf{quadratic} in fleet size and is not attempted).
+
+\textbf{How to read this comparison.}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  All numbers below use the \textbf{capped} edge list (parquet basename
+  contains \texttt{cap5000\_even30}; full path in \textbf{Appendix B}).
+  Do \textbf{not} treat this as a second headline for the full-coverage
+  \textbf{Table~1} row (§3.6).\\
+\item
+  The main benchmark uses \textbf{\texttt{-\/-model\ tgcn}}. This
+  ablation compares \textbf{\texttt{-\/-model\ gcn}} to
+  \textbf{\texttt{-\/-model\ graph\_transformer}},
+  i.e.~\textbf{convolution vs.~neighbor attention} in the \textbf{same
+  two-layer + GRU} template---not a different temporal core.
+\end{enumerate}
+
+\textbf{Protocol.} Train/test day caps \textbf{400} / \textbf{80};
+\textbf{5} epochs (the Table~1 combined row uses \textbf{3}); seeds
+\textbf{1--3}; embedding \textbf{32}; temporal node features on; hard
+negatives; \textbf{49} test days after masking. Write-ups and scripts:
+\texttt{gcn\_vs\_graph\_transformer.md} and
+\texttt{compare\_gcn\_graph\_transformer.py} (see \textbf{Appendix B}
+for full paths).
+
+\emph{Means ± standard deviation are \textbf{across seeds} (1--3),
+unlike the day-level spread described for the headline run in §4.1.}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Model & ROC AUC & Average precision \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{GCN} + GRU & \textbf{0.6201 ± 0.0102} & \textbf{0.7672 ±
+0.0226} \\
+\textbf{TransformerConv} + GRU & 0.4576 ± 0.1197 & 0.6735 ± 0.0554 \\
+\end{longtable}
+}
+
+On average, \textbf{GCN} achieves higher ROC AUC and AP and
+\textbf{lower} seed-to-seed variance. Paired tests by calendar day favor
+GCN for \textbf{each} seed (see artifact). A plausible---but
+\textbf{not} proven---explanation is that \textbf{noisy} proximity
+neighborhoods are stabilized more easily by \textbf{fixed} neighborhood
+aggregation than by \textbf{learned} attention weights under this
+budget, and that attention adds \textbf{parameters} without compensating
+gains. \textbf{Not attempted here:} global transformers, latent graph
+learning, edge-conditioned attention, or wide hyperparameter sweeps (see
+§6).
+
+\textbf{Why do social edges lower AUC?} The \textbf{directional
+ablation} (proximity-only on a 20-bucket evaluation slice) scores
+\textasciitilde0.78 AUC versus \textasciitilde0.73 on the 876-bucket
+combined+social run. Because the two are evaluated on different horizons
+the absolute gap is \textbf{directional, not like-for-like}, but the
+same qualitative pattern---proximity-only ahead of
+proximity+social---shows up in every smaller-scale ablation we ran.
+Three factors likely contribute:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Noise from registry grouping.} MID social edges link every
+  pair of vessels sharing the same three-digit national prefix. In a
+  predominantly Chinese-flagged dataset (MID~412), this connects
+  thousands of vessels that never physically co-occur, injecting edges
+  that the model must learn to discount.
+\item
+  \textbf{Over-smoothing.} Adding dense social edges increases the
+  effective neighborhood size for each GCN layer. When many neighbors
+  are structurally similar but behaviorally unrelated, node embeddings
+  blur toward a common mean, reducing the model's ability to distinguish
+  genuinely co-present pairs.
+\item
+  \textbf{Objective dilution.} The training loss treats social edges and
+  proximity edges identically (both are positive examples). The model
+  therefore spends capacity fitting registry structure rather than
+  geographic co-occurrence, which is the signal that carries over to
+  unseen test days.
+\end{enumerate}
+
+Adding dense MID-based social edges was a deliberate \textbf{first-cut}
+way to inject registry context, and the modest performance drop is
+informative rather than a dead end: it suggests the right answer is not
+``more edges of the same kind'' but \textbf{a different way to fuse
+identity information with movement}. Several concrete directions look
+more promising and are listed under §6:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Heterogeneous-edge architectures.} Treat proximity and
+  registry as \textbf{different relations} so the model can learn
+  separate aggregation functions per edge type (R-GCN, HGT, or a typed
+  message-passing layer). The current homogeneous GCN forces both
+  relations through the same weight matrix, which is exactly where the
+  dilution arises.
+\item
+  \textbf{Edge-type-specific weights inside the loss.} A simple
+  intermediate step before changing the architecture: down-weight social
+  positives (or sample them less aggressively) so that
+  \textbf{proximity} edges dominate the training signal while social
+  edges still contribute as a soft prior.
+\item
+  \textbf{MID as a node feature, not an edge.} Encoding the three-digit
+  MID prefix as a learned \textbf{node embedding} concatenated with the
+  temporal node features lets the model use registry context as a
+  \textbf{bias} on each vessel rather than as a forced positive between
+  every same-flag pair. This avoids creating thousands of structurally
+  identical neighbors in MID 412 while still letting the encoder
+  condition on flag.
+\item
+  \textbf{Tighter or richer registry signals.} Beyond MID, ownership
+  clusters, port-of-registry, or operator IDs (where available) are
+  usually more informative than three-digit national prefixes; combined
+  with (1) and (3), they would also let the model learn to
+  \textbf{discount} very common groupings.
+\end{enumerate}
+
+The point is not that registry information is unhelpful---it is that
+\textbf{how} it enters the graph matters at least as much as
+\textbf{whether} it enters at all.
+
+\subsection{Geographic validation and case
+studies}\label{geographic-validation-and-case-studies}
+
+Under the workflow that ranks candidates and then applies a
+\textbf{25~km}, \textbf{±1~day} rule, \textbf{eight} pairs remain. Two
+examples are \textbf{412422375 \(\leftrightarrow\) 412428225}
+(\textbf{2} qualifying days) and \textbf{412000690 \(\leftrightarrow\)
+412325200} (\textbf{102} days). Extended discussion and plots appear in
+\texttt{docs/candidate\_case\_studies.md}. §4.2.1 summarizes
+\textbf{gear composition} across all \textbf{200} ranked pairs and
+relates the \textbf{192} excluded pairs to \textbf{expectations} from
+fleet-wide co-location.
+
+\textbf{Figure~1 --- purpose.} Link scores are abstract; \textbf{maps}
+tie them to geography. \textbf{Figure~1} highlights the pair
+\textbf{412000690 \(\leftrightarrow\) 412325200} (\textbf{102} days
+within \textbf{25~km}) against the \textbf{Chinese} coast
+(\textbf{Yellow Sea / East China Sea}). Chance pairs would rarely show
+\textbf{persistent} spatial overlap; these tracks \textbf{do}
+overlap---supporting that the score reflects \textbf{real co-movement},
+not that we have proven illicit coordination. \textbf{Table~2} and
+Figures~3--4 summarize \textbf{eight} pairs under a \textbf{fixed}
+full-coverage screening rule (the pair set differs slightly from
+Figure~1); Figure~1 remains the clearest \textbf{single-pair}
+illustration.
+
+How to read the figure:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Blue lines} trace every daily mean position for vessel
+  \textbf{412000690}; \textbf{orange lines} trace vessel
+  \textbf{412325200}, both spanning 2013 to 2018.
+\item
+  The \textbf{colored background} is a \textbf{combined daily presence
+  density}: for each vessel a smoothed density surface (2D kernel
+  density estimation) is computed from all of its daily mean positions,
+  then the two surfaces are \textbf{summed} and normalized to a 0--1
+  scale. The horizontal color bar at the bottom maps this scale:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{Dark blue / purple} (0.00--0.15) = low combined presence ---
+    neither vessel spent much time there.
+  \item
+    \textbf{Teal / green} (0.15--0.45) = moderate combined presence ---
+    at least one vessel was present occasionally.
+  \item
+    \textbf{Yellow / orange / red} (0.45--1.00) = high combined presence
+    --- one or both vessels were frequently located there; the warmest
+    colors mark the densest overlap.
+  \end{itemize}
+\item
+  \textbf{Black contour lines} with numeric labels (0.1, 0.3, etc.)
+  outline specific density thresholds, making it easy to locate the core
+  shared operating area.
+\item
+  The \textbf{warmest region} (yellow-green, centered near
+  \textasciitilde121 E, 37--39 N off the Shandong Peninsula) is where
+  daily positions from \textbf{both} vessels overlap most, consistent
+  with a \textbf{shared fishing ground} in the Yellow Sea.
+\item
+  \textbf{Tan shading} = land (10 m Natural Earth coastline); labeled
+  cities (\textbf{Shanghai}, \textbf{Qingdao}, \textbf{Jinan},
+  \textbf{Nanjing}, \textbf{Yancheng}) provide geographic reference
+  along the coast.
+\end{itemize}
+
+\pandocbounded{\includegraphics[keepaspectratio,alt={Case study tracks}]{../artifacts/plots/case_study_pairs/pair_412000690_412325200_contour.png}}\\
+\emph{Figure 1. Flagship candidate pair (\textbf{412000690}, blue;
+\textbf{412325200}, orange), Yellow Sea / Chinese coast, 2013--2018.
+Shading: summed kernel density of daily presence (0--1); contours mark
+density thresholds (see §4.2 ``How to read''). Confirms sustained
+overlap near \textasciitilde121°E, 37--39°N---link score aligns with a
+shared operating area, not random pairing. Tracks-only PNG and commands:
+Appendix~B.}
+
+\subsubsection{Gear-aware candidate
+stratification}\label{gear-aware-candidate-stratification}
+
+The model nominates about \textbf{200} pairs; after the \textbf{25~km /
+±1~day} geographic rule, \textbf{eight} remain. The question is what the
+other \textbf{192} pairs represent. A \textbf{gear-aware}
+post-processing step summarizes their \textbf{fleet context} and offers
+a numerical rationale for treating many of them as \textbf{ordinary}
+same-fleet overlap.
+
+\textbf{Method.} For \textbf{267} distinct MMSIs in the top-200 list we
+infer a \textbf{dominant gear} by sampling \textbf{96} vessel-days (one
+per month from 2012--2019) and joining to \textbf{fleet} grids with the
+same \textbf{hours-weighted} rule used elsewhere (§4.3.1).
+Independently, we estimate how often each \textbf{gear pair}
+(trawler--trawler, trawler--gillnet, etc.) appears in the same grid cell
+on the same day using \textbf{32} sampled fleet days spanning
+2012--2019---about \textbf{seven million} cell-day observations in
+total. That baseline answers how common each gear pairing is
+\textbf{before} consulting any model score.
+
+Each candidate receives \texttt{adjusted\ =\ TGCN\_score\ ×\ discount}
+with
+\texttt{discount\ =\ 1\ /\ (1\ +\ 2\ ×\ normalized\_baseline\_rate)}.
+Gear combinations that are \textbf{frequent} in the fleet receive a
+\textbf{larger} discount; \textbf{rarer} or \textbf{cross-gear}
+combinations are discounted \textbf{less}. Unknown gear receives
+\textbf{no} change.
+
+\textbf{Key findings (Figure 2):}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{75\% of the top-200 candidates} are trawler-dominated: 82
+  pairs (41\%) are \textbf{Trawlers + Trawlers} and 67 (34\%) are
+  \textbf{Line / generic + Trawlers}. However the two categories tell
+  very different stories: \textbf{Trawlers + Trawlers} is actually
+  \emph{1.1× below} the fleet baseline --- the model is not
+  preferentially elevating same-gear pairs; there are simply many
+  trawler pairs in the data. \textbf{Line / generic + Trawlers}, by
+  contrast, appears \textbf{10.5× above} the fleet baseline --- the TGCN
+  is specifically surfacing these cross-gear encounters far more than
+  chance would predict, suggesting genuine signal.
+\item
+  \textbf{50\% are same-flag} (predominantly CHN + CHN), consistent with
+  vessels from the same national fleet operating in the same waters.
+\item
+  After gear adjustment, cross-gear validated pairs \textbf{held or
+  improved} their rank: the \textbf{Set gillnets + Trawlers} pair
+  (412461376 \(\leftrightarrow\) 412415321) jumped \textbf{48 ranks} (72
+  → 24), and the \textbf{Fixed gear + Trawlers} pair (412422375
+  \(\leftrightarrow\) 412428225) dropped only 2 ranks.
+\item
+  The two \textbf{Trawlers + Trawlers} validated pairs dropped
+  \textbf{70+ ranks} each (e.g., 80 → 154), confirming their co-presence
+  is explained by shared fishing grounds rather than distinctive
+  coordination.
+\end{itemize}
+
+\textbf{Why the results look this way.} The top-200 list is dominated by
+trawler pairs for a straightforward reason: trawlers are the most common
+vessel type in the dataset and they concentrate in the same high-density
+fishing grounds (Yellow Sea, East China Sea). From the TGCN's
+perspective, two trawlers that share the same seasonal migration look
+structurally identical --- they appear in the same grid cells, on the
+same days, year after year. The model correctly identifies this overlap
+but cannot distinguish ``two boats following the same fish'' from ``two
+boats deliberately meeting.'' That is why 80 of the 82 trawler-trawler
+candidates \textbf{fail} the strict 25 km / ±1 day check: their
+graph-level similarity does not translate to sustained physical
+proximity on a given day.
+
+Cross-gear pairs tell the opposite story. A fixed-gear vessel
+(stationary nets or traps) and a trawler (moving nets) have different
+operating modes, target different species, and rarely share the same
+grid cell by chance. When the model flags such a pair \emph{and} the
+geographic filter confirms they were repeatedly within 25 km, the
+co-location is unlikely to be coincidental. This is reflected in the
+pass rates: \textbf{Fixed gear + Trawlers} passes at \textbf{25\%} (1 of
+4), compared to \textbf{2.4\%} for trawler-trawler pairs --- roughly a
+\textbf{10× difference}. The intermediate categories follow the same
+gradient: \textbf{Set gillnets + Trawlers} passes at \textbf{8.3\%}, and
+\textbf{Line / generic + Trawlers} at \textbf{6.0\%}.
+
+\textbf{What this means for the project.} The gear-aware analysis serves
+two purposes:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{It justifies the geographic filter.} The 192 excluded pairs
+  are not ``false positives'' in the traditional sense --- the model
+  genuinely detected shared movement patterns. But those patterns are
+  explained by normal fleet behavior (thousands of same-type vessels
+  fishing the same waters), not by vessel-to-vessel coordination. The
+  filter correctly separates fleet-level noise from pair-specific
+  signal.
+\item
+  \textbf{It strengthens the 8 validated pairs.} The fact that
+  cross-gear pairs survive at disproportionately high rates means the
+  validated set is enriched for behaviorally unusual encounters ---
+  exactly the kind of co-location that warrants further investigation.
+  In particular, the Set gillnets + Trawlers pair that jumped 48 ranks
+  after adjustment (72 → 24) was originally buried among dozens of
+  trawler pairs; the gear-aware lens reveals it as one of the most
+  distinctive candidates in the entire list.
+\end{enumerate}
+
+How to read Figure 2:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Panel (a)} answers ``why did 192 of 200 fail?'' Each
+  horizontal bar is one gear-type combination; bar length is the
+  \textbf{number of candidate pairs} in that category (all 200 are
+  shown). Each bar is \textbf{stacked}: gray = did not pass the 25 km /
+  ±1 day geographic check; green = passed. \textbf{Failed} and
+  \textbf{passed} counts are written once to the \textbf{right of each
+  bar} (not inside narrow segments), so labels do not overlap. A strip
+  below the chart shows the \textbf{whole cohort} (192 failed + 8 passed
+  = 200). The bracket still highlights that \textbf{pass rates} (passed
+  ÷ category size) are much higher for cross-gear categories than for
+  \textbf{Trawlers + Trawlers}---e.g.~\textbf{Fixed gear + Trawlers}
+  \textbf{25\%}, \textbf{Set gillnets + Trawlers} \textbf{8.3\%},
+  \textbf{Line / generic + Trawlers} \textbf{6.0\%}, versus
+  \textbf{2.4\%} for \textbf{Trawlers + Trawlers} (82 pairs), roughly
+  \textbf{10×} at the extremes.
+\item
+  \textbf{Panel (b)} answers ``should we trust the 8 that survived?'' A
+  table lists every validated pair with its MMSI identifiers, gear
+  combination, flag match, days within 25 km, mean distance, and TGCN
+  rank. Six of eight are cross-gear pairs, consistent with genuine
+  vessel-to-vessel encounters rather than fleet noise. The two
+  trawler-trawler pairs have higher mean distances (191--349 km across
+  overlap days) and lower ranks, further supporting the interpretation
+  that their validation is marginal compared to the cross-gear pairs.
+\end{itemize}
+
+\pandocbounded{\includegraphics[keepaspectratio,alt={Gear-aware re-ranking}]{../artifacts/plots/gear_aware_reranking.png}}\\
+\emph{Figure 2. Gear-stratified review of top-200 candidates after the
+\textbf{25~km / ±1~day} rule. \textbf{(a)} Counts by gear-type
+combination: gray = failed geography, green = passed (all 200 pairs).
+\textbf{(b)} Summary table of the eight passing pairs (gear, flag, days
+within 25~km, rank). Script: \texttt{scripts/gear\_aware\_reranking.py};
+Appendix~B.}
+
+\subsection{Monthly overlap and cluster
+context}\label{monthly-overlap-and-cluster-context}
+
+\textbf{Figure 3} charts the monthly count of days each validated pair's
+vessels were within \textbf{25 km}. \textbf{Figure 4} maps those same
+rendezvous locations geographically and highlights a \textbf{six-vessel}
+subgroup near \textbf{\textasciitilde30 N, 122 E}.
+
+How to read Figure 3:
+
+\begin{itemize}
+\tightlist
+\item
+  Each \textbf{row} is one vessel pair, sorted from most overlap (top)
+  to least (bottom). The \textbf{y-axis label} shows the pair number,
+  the flag state(s) involved (e.g., CHN for China), and a summary line
+  giving the total days and active months.
+\item
+  Each \textbf{bubble} represents one calendar month. \textbf{Bubble
+  size is proportional to the number of days} the two vessels were
+  within 25 km that month (see the size legend in the upper right: 1, 5,
+  10, 20 days).
+\item
+  \textbf{Numbers inside larger bubbles} give the exact day count for
+  that month.
+\item
+  \textbf{Blank spaces} mean zero close approaches that month --- the
+  pair was either not active or never came within 25 km.
+\item
+  \textbf{Alternating row shading} (white / light gray) helps visually
+  separate pairs.
+\item
+  \textbf{Color} distinguishes pairs but carries no additional meaning
+  beyond identification.
+\end{itemize}
+
+How to read Figure 4:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Faint gray dots} show all rendezvous points (monthly locations
+  where any of the eight pairs were within 25 km).
+\item
+  \textbf{Colored markers} (circles, squares, diamonds, triangles,
+  crosses) each represent one of the \textbf{six cluster vessels}. The
+  legend in the upper left identifies each vessel by abbreviated MMSI
+  and flag state (all CHN).
+\item
+  \textbf{Thin gray lines} connect cluster members that appear together
+  as a pair, showing which vessels rendezvous with which.
+\item
+  The \textbf{red X} marks the \textbf{weighted hotspot centroid} ---
+  the average location of all cluster rendezvous points
+  (\textasciitilde29.7 N, 122.3 E).
+\item
+  \textbf{Tan land shading}, coastlines, rivers, and labeled cities
+  (\textbf{Shanghai}, \textbf{Hangzhou}, \textbf{Ningbo},
+  \textbf{Wenzhou}, \textbf{Fuzhou}) provide geographic reference.
+\end{itemize}
+
+\subsubsection{Gear type codes (how to read ``country ·
+gear'')}\label{gear-type-codes-how-to-read-country-gear}
+
+Figures~3--4 and Tables~2--3 label each vessel as \textbf{country ·
+gear}. \textbf{Country} is taken from the enrichment file
+\texttt{artifacts/cooperative\_pairs\_with\_flag\_gear.csv} when
+present; otherwise it is inferred from the \textbf{ITU MID} prefix (for
+example \textbf{MID111}). \textbf{Gear} strings such as
+\texttt{trawlers} or \texttt{set\_gillnets} come from \textbf{fleet}
+\texttt{geartype} fields on a \textbf{grid} and are assigned by
+\textbf{hours-weighted} overlap between vessel tracks and fleet cells
+(\texttt{scripts/enrich\_pairs\_with\_flag\_gear.py}). These labels
+describe \textbf{coarse fisheries-activity categories}, \textbf{not}
+formal licensing or gear certificates. Tables~2--3 and the figures use
+the \textbf{2012--2019} enrichment---the same basis as §4.2.1---which is
+\textbf{broader} than an August~2017-only enrichment. Definitions for
+each code appear in \textbf{Appendix~A}.
+
+\textbf{Table 2 --- Eight validated pairs (country · gear per vessel).}
+\emph{Format: src MMSI, dst MMSI, then src country · gear \textbar{} dst
+country · gear.}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+src & dst & Country · gear (src \textbar{} dst) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+412422375 & 412428225 & CHN · fixed\_gear \textbar{} CHN · trawlers \\
+412461376 & 412415321 & CHN · trawlers \textbar{} CHN · set\_gillnets \\
+412437423 & 412435485 & CHN · trawlers \textbar{} CHN · fishing \\
+412410128 & 412416248 & CHN · fishing \textbar{} CHN · trawlers \\
+412420679 & 412413383 & CHN · fishing \textbar{} CHN · trawlers \\
+412450427 & 111203412 & CHN · fishing \textbar{} MID111 · trawlers \\
+412985698 & 412443375 & CHN · trawlers \textbar{} CHN · trawlers \\
+412461376 & 412427825 & CHN · trawlers \textbar{} CHN · trawlers \\
+\end{longtable}
+}
+
+\textbf{Table 3 --- Six-vessel cluster (Figure 4).} \emph{MMSIs selected
+by \texttt{scripts/analyze\_six\_vessel\_cluster.py}; labels match plot
+legend.}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+MMSI & Country · gear \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+412413383 & CHN · trawlers \\
+412420679 & CHN · fishing \\
+412427825 & CHN · trawlers \\
+412435485 & CHN · fishing \\
+412437423 & CHN · trawlers \\
+412461376 & CHN · trawlers \\
+\end{longtable}
+}
+
+\pandocbounded{\includegraphics[keepaspectratio,alt={All pairs days within 25 km (monthly)}]{../artifacts/plots/pair_overlap_series/all_pairs_days_within_25km.png}}\\
+\emph{Figure 3. Monthly days within \textbf{25~km} for the eight
+validated pairs (2013--2019). One row per pair (sorted by total
+overlap); bubble area is proportional to days that month (see legend).
+Axis labels give total overlap days and months active. Pair~1 shows
+dense 2015--2016 overlap; others are mostly sporadic; pair~7 is the only
+cross-flag case. Reading guide: §4.3.}
+
+\pandocbounded{\includegraphics[keepaspectratio,alt={Six-vessel cluster}]{../artifacts/plots/six_vessel_cluster_scatter.png}}\\
+\emph{Figure 4. Rendezvous locations (monthly, within 25~km) for
+validated pairs, with Chinese coast context (Fuzhou--Shanghai). Gray
+dots: all rendezvous points; colored symbols: six vessels that recur
+across pairs (legend abbreviates MMSI); gray segments connect recorded
+pairings. Red \textbf{×}: centroid of cluster rendezvous
+(\textasciitilde29.7°N, 122.3°E), east of Ningbo. Highlights repeated
+convergence of multiple pairs in one offshore band---consistent with
+Figure~3.}
+
+\subsection{Exploratory short-window analysis (August 2017; not the main
+benchmark)}\label{exploratory-short-window-analysis-august-2017-not-the-main-benchmark}
+
+Early in the project we trained a small TGCN on \textbf{five}
+consecutive days in \textbf{August 2017} (7--11 Aug)---one of the few
+intervals where cell-level fleet products provided \textbf{country and
+gear} labels for enrichment. Metrics on that slice (about \textbf{0.56}
+AUC, \textbf{0.67} AP) sit \textbf{far below} the 2012--2019 benchmark
+and should be treated only as \textbf{illustrative}.
+
+\textbf{Why we abandoned the August~2017 shortcut for the main
+pipeline.} The five-day window was attractive at first because the
+corresponding fleet enrichment file came pre-labeled, which made gear
+and country joins trivial; but five days of test data is \textbf{too
+short} for a temporal benchmark (only \textbf{5} test buckets versus
+\textbf{876} in the headline run), concentrates on a single seasonal
+regime that does \textbf{not} reflect annual variability, and ties
+\textbf{gear assignment} to whatever vessels happened to be active in
+that one summer week. The full-timeline gear analysis in §4.2.1
+\textbf{replaces} this shortcut: it assigns gear using
+\textbf{2012--2019} fleet context for all \textbf{200}
+candidates---roughly \textbf{seven million} cell-day observations across
+\textbf{32} sampled fleet days---so the labels reflect each vessel's
+\textbf{dominant} behavior over years rather than a single-week
+snapshot, and the headline metrics in Table~1 sit on a properly long
+evaluation horizon. An August~2017 cooperation graphic remains in
+\texttt{artifacts/plots/tgcn\_daily\_cooperation\_heatmap.png} for
+archival purposes but is \textbf{not} part of this document. Gear codes
+are defined in \textbf{Appendix~A}.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Discussion}\label{discussion}
+
+This section states \textbf{limitations} of the task, data, metrics, and
+operational use---standard before §6.
+
+\subsection{Threats and limitations}\label{threats-and-limitations}
+
+The same concerns as in earlier drafts, grouped so readers can scan by
+\textbf{what kind} of limitation is at issue.
+
+\subsubsection{Task definition and
+semantics}\label{task-definition-and-semantics}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Link prediction ranks edges under a graph rule, not
+  misconduct.} ROC AUC / AP measure fit to observed vs sampled
+  \textbf{non-edges}. High scores follow from \textbf{shared grounds},
+  \textbf{lanes}, or \textbf{ports} as easily as from rare
+  coordination.\\
+\item
+  \textbf{No cooperation, IUU, or ``dark fleet'' labels} were used for
+  training; the objective is structural co-occurrence only.\\
+\item
+  \textbf{Shared geography is not the same as coordination.} In crowded
+  fisheries, overlap is \textbf{ambiguous} even when it is wholly legal
+  and routine.
+\end{itemize}
+
+\subsubsection{Data and preprocessing}\label{data-and-preprocessing}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{AIS} can be missing, intermittent, or misused; graphs only see
+  \textbf{broadcast} tracks.\\
+\item
+  \textbf{Daily means, grid cells, and merge rules} shape both edges and
+  post-hoc distances.\\
+\item
+  \textbf{Dense regions} yield many possible edges---\textbf{degree} and
+  \textbf{baseline encounter rate} can inflate scores relative to
+  detecting \textbf{rare} pairwise events.\\
+\item
+  The \textbf{August~2017} slice is a \textbf{narrow} exploratory
+  window---\textbf{do not} treat it like the 2012--2019 benchmark.\\
+\item
+  \textbf{Country · gear} come from \textbf{fleet cell enrichment}
+  (§4.3.1, \textbf{Appendix~A}): useful for narrative context,
+  \textbf{not} a substitute for registry or license records.
+\end{itemize}
+
+\subsubsection{Evaluation and
+reproducibility}\label{evaluation-and-reproducibility}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Metrics are not enforcement decisions.} Good ranking on the
+  surrogate task does \textbf{not} validate real-world outcomes;
+  \textbf{ground-truth coordination} would be needed and is
+  \textbf{absent} here.\\
+\item
+  The headline combined-graph row is \textbf{single-seed}; §4.1 gives
+  day-level spread and seed spread on \textbf{other}
+  setups---\textbf{multi-seed} uncertainty on the full benchmark is
+  \textbf{future work}.\\
+\item
+  \textbf{Gear-aware adjustment} (§4.2.1) uses a \textbf{sampled} fleet
+  baseline (\textbf{32} fleet days, \textasciitilde7~million cell-days)
+  and a \textbf{fixed discount} formula: \textbf{transparent},
+  \textbf{not} calibrated; alternate formulas would \textbf{change
+  ranks}. Use it to \textbf{interpret} the long list, \textbf{not} as a
+  second detector replacing geography.
+\end{itemize}
+
+\subsubsection{Deployment and computational
+constraints}\label{deployment-and-computational-constraints}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Training} was limited to \textbf{\textasciitilde1450} days on
+  a \textbf{16~GB} laptop; larger caps hit \textbf{memory}
+  failure---reported limits are \textbf{hardware-bound}, not an
+  intrinsic ceiling on the method.\\
+\item
+  In operations, treat outputs as \textbf{ranked lists} plus
+  maps/tables: \textbf{analyst triage}, \textbf{not} automated findings.
+\end{itemize}
+
+\subsection{Synthesis}\label{synthesis}
+
+\textbf{Social edges} link vessels by registry prefix even when they
+rarely meet; that injects \textbf{noise}, encourages
+\textbf{over-smoothing}, and \textbf{dilutes} proximity in the training
+loss---so the \textbf{combined} graph's headline scores \textbf{trail}
+the \textbf{proximity-only} curve despite embedding organizational
+signal one might encode differently in another architecture.
+\textbf{Strict post-hoc geography} (25~km, ±1~day on daily means) tests
+whether pairs flagged by \textbf{10~km} same-day structure actually
+\textbf{repeatedly co-locate} at operational distances; it
+\textbf{separates} fleet-scale \textbf{structural similarity} from
+\textbf{pair-level} proximity. \textbf{``Validated''} here means
+\textbf{passing that screen} together with documented \textbf{tracks and
+overlap}---an analyst gets a \textbf{short} list of \textbf{reviewable}
+cases with \textbf{reproducible exhibits}, \textbf{not} a determination
+of guilt or IUU.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Conclusion and future work}\label{conclusion-and-future-work}
+
+This report describes an \textbf{unsupervised} pipeline from AIS to
+daily graphs to a \textbf{TGCN} for \textbf{temporal link prediction},
+evaluated with a \textbf{chronological} train/test split (§3.1; formal
+symbols in \textbf{Appendix~C}). On the \textbf{combined}
+graph---proximity edges plus \textbf{MID-consistent} social edges---the
+documented laptop run reaches \textbf{ROC AUC = 0.72997} and \textbf{AP
+= 0.71381} on \textbf{876} test days (\textbf{Table~1}), with
+\textbf{proximity-only} and \textbf{capped-graph} settings reported for
+comparison. \textbf{Eight} pairs remain after conservative
+\textbf{post-hoc} distance filters (\textbf{Table~2}). The
+\textbf{gear-aware} analysis (§4.2.1) suggests that much of the top-200
+list reflects \textbf{routine} trawler-dominated fleet structure,
+whereas pairs that clear geography---and especially \textbf{cross-gear}
+pairs---look \textbf{less} typical relative to fleet baselines. Figures
+and tables add \textbf{country and gear} context where enrichment exists
+(\textbf{Appendix~A}). For operational use, the deliverable is a
+\textbf{ranked candidate list} with \textbf{reproducible} geographic and
+contextual checks---not a finding of guilt or confirmed IUU.
+
+\textbf{Future work.} Three directions stand out as both feasible on the
+existing pipeline and high-value:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Multi-seed uncertainty on the full benchmark.} Re-run the
+  headline combined-graph configuration with at least \textbf{3--5
+  seeds} so the \textbf{single-seed} headline of \textbf{0.72997 /
+  0.71381} can be reported with a proper confidence interval rather than
+  only the day-level spread (§4.1). Pair this with a
+  \textbf{precision-at-K} sweep (top \textbf{50 / 100 / 200} pairs
+  versus geographic survival rate) so the \textbf{operational} value of
+  the model is reported in the same table as the macro metrics.
+\item
+  \textbf{Better fusion of registry / ownership information.} The
+  observed drop from the proximity-only ablation
+  (\textasciitilde{}\textbf{0.78} AUC on a 20-bucket slice) to the
+  combined+social run (\textasciitilde{}\textbf{0.73} AUC on 876
+  buckets) does not say that registry context is unhelpful---it says
+  that \textbf{dense, equally-weighted} social edges between every
+  same-MID pair are the wrong way to inject it. More promising fusions,
+  all listed in §4.1: \textbf{heterogeneous-edge} architectures (R-GCN /
+  HGT / typed message passing) that learn a \textbf{separate}
+  aggregation per edge type; \textbf{edge-type-specific weights} in the
+  loss so proximity dominates the training signal; and treating MID (or
+  richer ownership / port-of-registry IDs) as a \textbf{node feature}
+  concatenated with the temporal embedding rather than as an explicit
+  edge---conditioning the encoder on flag without creating thousands of
+  structurally identical neighbors. Each of these should also tighten
+  the \textbf{top-200 → geography → gear-context} funnel in
+  \textbf{Table 1b}, raising the analyst-yield rate above the current
+  \textbf{4\%} and---if the gap between trawler--trawler and
+  best-cross-gear pass rates persists---make the operational top-N list
+  cleaner without an analyst having to filter post-hoc.
+\item
+  \textbf{Scaling and richer signals.} Finer spatial-temporal
+  resolution; \textbf{supervised or semi-supervised} extensions where
+  trustworthy labels exist (e.g., declared transshipment events);
+  \textbf{movement-based} gear or behavior models; larger day budgets on
+  \textbf{high-memory} machines beyond the
+  \textbf{\textasciitilde1450}-day laptop ceiling; and a disciplined
+  separation of the \textbf{main 2012--2019 benchmark} from
+  \textbf{illustrative} short windows such as August 2017.
+\end{enumerate}
+
+\clearpage
+
+\section*{References}\label{references}
+\addcontentsline{toc}{section}{References}
+
+\begin{itemize}
+\tightlist
+\item
+  Kroodsma, D. A., et al.~(2018). \emph{Tracking the global footprint of
+  fisheries}. Science, 359(6378), 904--908.\\
+\item
+  Miller, N. A., et al.~(2018). \emph{Identifying global patterns of
+  transshipment behavior}. Frontiers in Marine Science, 5, 240.\\
+\item
+  Park, J., et al.~(2020). \emph{A systematic assessment of vessel
+  monitoring data for identifying suspicious transshipment events}. ICES
+  Journal of Marine Science.\\
+\item
+  Kipf, T. N., \& Welling, M. (2017). \emph{Semi-Supervised
+  Classification with Graph Convolutional Networks}. ICLR.\\
+\item
+  Hamilton, W. L., Ying, R., \& Leskovec, J. (2017). \emph{Inductive
+  Representation Learning on Large Graphs}. NeurIPS.\\
+\item
+  Yu, B., Yin, H., \& Zhu, Z. (2018). \emph{Spatio-Temporal Graph
+  Convolutional Networks: A Deep Learning Framework for Traffic
+  Forecasting}. IJCAI.\\
+\item
+  Seo, Y., et al.~(2018). \emph{Structured Sequence Modeling with Graph
+  Convolutional Recurrent Networks}. ICONIP.\\
+\item
+  Rossi, E., et al.~(2020). \emph{Temporal Graph Networks for Deep
+  Learning on Dynamic Graphs}. ICML Workshop on Graph Representation
+  Learning.\\
+\item
+  Lü, L., \& Zhou, T. (2011). \emph{Link prediction in complex networks:
+  A survey}. Physica A, 390(6), 1150--1170.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\clearpage
+
+\section*{Appendix A --- Gear type
+codes}\label{appendix-a-gear-type-codes}
+\addcontentsline{toc}{section}{Appendix A --- Gear type codes}
+
+\emph{Plain-language definitions for \textbf{gear} strings in
+\textbf{Tables 2--3} and \textbf{Figures 2--4}. The same content is kept
+in the repository as \textbf{\texttt{docs/gear\_types.md}} for version
+control and easy editing.}
+
+\subsection*{Source of labels}\label{source-of-labels}
+\addcontentsline{toc}{subsection}{Source of labels}
+
+Figure and table \textbf{gear} labels are \textbf{not} copied from a
+vessel registry. For each vessel--day we intersect AIS grid cells with
+\textbf{fleet} rows that report \textbf{hours} by \textbf{flag ×
+geartype} within the cell; we assign the \textbf{geartype with the
+largest weighted hours}
+(\texttt{scripts/enrich\_pairs\_with\_flag\_gear.py}). The result is a
+\textbf{coarse behavioral tag}---``what fishing activity dominates that
+cell's attributed effort''---rather than an official gear permit for
+that MMSI.
+
+Plots show \textbf{---} when enrichment fails (no fleet overlap or
+vessel absent from the join).
+
+\subsection*{\texorpdfstring{Codes in
+\texttt{artifacts/cooperative\_pairs\_with\_flag\_gear.csv}}{Codes in artifacts/cooperative\_pairs\_with\_flag\_gear.csv}}\label{codes-in-artifactscooperative_pairs_with_flag_gear.csv}
+\addcontentsline{toc}{subsection}{Codes in
+\texttt{artifacts/cooperative\_pairs\_with\_flag\_gear.csv}}
+
+These strings are taken \textbf{as-is} from the fleet
+\textbf{\texttt{geartype}} column (snake\_case).
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.4800}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5200}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Code (CSV)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Short gloss
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{\texttt{fishing}} & \textbf{Generic / unspecified fishing.}
+Catch-all category in the source data when activity is attributed to
+``fishing'' without a more specific gear class. Treat as \textbf{low
+specificity} compared to trawlers, nets, etc. \\
+\textbf{\texttt{trawlers}} & \textbf{Trawling.} Vessels \textbf{tow
+nets} through the water column or along the bottom (e.g.~otter trawl,
+beam trawl). High mobility; distinct from \textbf{fixed} or \textbf{set}
+gear. \\
+\textbf{\texttt{fixed\_gear}} & \textbf{Stationary gear} fixed to the
+seabed or structure: pots, traps, stakes, weirs, and similar
+\textbf{non-towed} gear that stays in place. (Name reflects ``fixed''
+position, not ``repaired.'') \\
+\textbf{\texttt{set\_gillnets}} & \textbf{Set gillnets.} Nets
+\textbf{set and left} (anchored, on bottom, or sometimes drifting) so
+fish \textbf{gill} in the mesh. Not actively towed like a trawl. \\
+\textbf{\texttt{set\_longlines}} & \textbf{Set longlines.} A
+\textbf{long line} with many \textbf{baited hooks}, deployed and
+\textbf{left to soak} (demersal or pelagic longline, depending on
+fishery). \\
+\textbf{\texttt{other\_purse\_seines}} & \textbf{Purse seining (other).}
+A \textbf{surrounding net} used on \textbf{schooling fish}; the bottom
+is \textbf{pulled closed} (``pursed'') like a drawstring. ``Other''
+indicates a sub-type bucket in the source taxonomy (not necessarily
+``miscellaneous quality''). \\
+\textbf{\texttt{pole\_and\_line}} & \textbf{Pole-and-line / baitboat.}
+Fish caught with \textbf{hand-held poles} and \textbf{hooks}, often with
+\textbf{live bait}; common in some tuna fisheries. \\
+\end{longtable}
+}
+
+\subsection*{How to interpret labels}\label{how-to-interpret-labels}
+\addcontentsline{toc}{subsection}{How to interpret labels}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Same MMSI, different days} can get different geartypes if the
+  vessel moves between cells dominated by different fleet
+  attributions.\\
+\item
+  \textbf{Same geartype on two MMSIs} does not prove they use identical
+  gear---only that both were attributed the same \textbf{coarse} class
+  in the fleet enrichment window (2012--2019 for all tables and
+  figures).\\
+\item
+  \textbf{AIS ``ship type''} codes differ from fleet \textbf{geartype}
+  here: the latter is \textbf{fisheries-activity} oriented, not the full
+  IMO/AIS ship-type list.
+\end{enumerate}
+
+Methodology of the join and weighting:
+\texttt{scripts/enrich\_pairs\_with\_flag\_gear.py} and §4.3--4.4 of
+this report.
+
+\subsection*{Related work (not from the same
+CSV)}\label{related-work-not-from-the-same-csv}
+\addcontentsline{toc}{subsection}{Related work (not from the same CSV)}
+
+The repository also includes a \textbf{movement-based gear classifier}
+trained on \textbf{anonymized} labeled tracks (see project
+\texttt{README.md}, ``Gear classification''). Those class labels
+(e.g.~\texttt{purse\_seines}, \texttt{trollers}) are \textbf{not}
+automatically the same strings as the fleet \textbf{\texttt{geartype}}
+column above; do not merge them without an explicit mapping.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\clearpage
+
+\section*{Appendix B ---
+Reproducibility}\label{appendix-b-reproducibility}
+\addcontentsline{toc}{section}{Appendix B --- Reproducibility}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.2727}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.7273}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Item
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Command / path
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Combined edges &
+\texttt{python3\ scripts/add\_social\_edges.py\ -\/-edges\ artifacts/edges\_2012\_2019\_full.parquet\ -\/-out\ artifacts/edges\_full\_with\_social.parquet\ -\/-max-social-per-bucket\ 2000} \\
+Primary TGCN JSON/CSV &
+\texttt{artifacts/tgcn\_social\_maxb1450\_ep3.json}, \texttt{.csv} ---
+PyG env, \texttt{PYTHONPATH=scripts} \\
+Optional per-bucket metric plots (not in main report) &
+\texttt{python3\ scripts/plot\_tgcn\_bucket\_metrics.py\ -\/-report\ artifacts/tgcn\_social\_maxb1450\_ep3.json\ -\/-out-dir\ artifacts/plots} \\
+Case study tracks (Figure 1) --- command &
+\texttt{python3\ scripts/compute\_pair\_overlap\_from\_daily.py\ -\/-pairs\ artifacts/case\_study\_pairs.csv\ -\/-daily-root\ "data/MMSI\ daily\ vessels\ "\ -\/-top-k\ 4\ -\/-distance-km\ 25\ -\/-day-window\ 1\ -\/-max-files-per-year\ 0\ -\/-out-dir\ artifacts/plots/case\_study\_pairs\ -\/-contour} \\
+Case study tracks --- notes &
+\textbf{\texttt{-\/-max-files-per-year\ 0}} uses all daily CSVs
+(default); smaller values can undercount vs
+\texttt{docs/candidate\_case\_studies.md}.
+\textbf{\texttt{-\/-contour}}: KDE density map (\texttt{Spectral\_r}).
+With \textbf{cartopy}: coastlines / land / cities. Outputs
+\texttt{pair\_\textless{}src\textgreater{}\_\textless{}dst\textgreater{}\_contour.png}
+(+ tracks-only \texttt{.png}). Optional \texttt{-\/-out-summary},
+\texttt{-\/-contour-all-pairs}. \\
+Ablations & \texttt{scripts/run\_tgcn\_improvement\_suite.py} →
+\texttt{artifacts/tgcn\_improvement\_suite\_summary.csv} \\
+August cooperation summary (not in report; see §4.4) &
+\texttt{PYTHONPATH=scripts\ python3\ scripts/plot\_cooperative\_heatmap.py}
+--- two-panel aggregate cooperation summary: stacked bar chart by gear
+group + flag-state breakdown (Aug 2017 short window). Output:
+\texttt{artifacts/plots/tgcn\_daily\_cooperation\_heatmap.png}. \\
+Eight-pair overlap CSV + optional heatmap PNG & Full command in
+\textbf{block below} (overlap CSV feeds \textbf{Tables 2--3} / Figures
+3--4). \\
+Monthly overlap bubble chart (Figure 3) &
+\texttt{PYTHONPATH=scripts\ python3\ scripts/plot\_pair\_overlap\_time\_series.py\ -\/-overlap-csv\ artifacts/eight\_pairs\_overlap\_by\_month.csv\ -\/-enrichment\ artifacts/cooperative\_pairs\_with\_flag\_gear.csv}
+--- bubble chart of monthly close approaches, one row per pair. \\
+Six-vessel cluster map (Figure 4) &
+\texttt{PYTHONPATH=scripts\ python3\ scripts/analyze\_six\_vessel\_cluster.py\ -\/-overlap-csv\ artifacts/eight\_pairs\_overlap\_by\_month.csv\ -\/-enrichment\ artifacts/cooperative\_pairs\_with\_flag\_gear.csv}
+--- geographic scatter with cartopy coastline, land fill, cities. \\
+Enrichment CSV (for labels) &
+\texttt{artifacts/cooperative\_pairs\_with\_flag\_gear.csv} ---
+\texttt{scripts/enrich\_pairs\_with\_flag\_gear.py} \\
+\textbf{Gear type definitions (for tables \& figures)} &
+\textbf{Appendix A} (mirror for repo edits:
+\texttt{docs/gear\_types.md}) \\
+\textbf{Notation / formal link-prediction setup} & \textbf{Appendix C}
+(symbol table; training vs validation distances) \\
+Gear × country pair-count heatmap (updated PNG) &
+\texttt{PYTHONPATH=scripts\ python3\ scripts/plot\_flag\_gear\_enrichment.py\ -\/-input\ artifacts/cooperative\_pairs\_with\_flag\_gear.csv\ -\/-out-dir\ artifacts/plots} \\
+Gear-aware re-ranking (Figure 2) &
+\texttt{PYTHONPATH=scripts\ python3\ scripts/gear\_aware\_reranking.py}
+--- enriches top-200 candidate MMSIs with gear type (96 sampled days),
+computes fleet co-location baselines (\textasciitilde7M cell-days), and
+produces gear-adjusted rankings + combined bar-chart-and-table
+figure. \\
+Candidates / close pairs &
+\texttt{artifacts/tgcn\_candidate\_scores\_fullcoverage.parquet},
+\texttt{artifacts/close\_pairs\_fullcoverage\_25km\_w1.csv} \\
+\end{longtable}
+}
+
+\textbf{Eight-pair overlap heatmap --- copy/paste (project root):}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\VariableTok{PYTHONPATH}\OperatorTok{=}\NormalTok{scripts }\ExtensionTok{python3}\NormalTok{ scripts/overlap\_by\_month\_8pairs.py }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}pairs}\NormalTok{ artifacts/close\_pairs\_fullcoverage\_25km\_w1.csv }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}daily{-}root} \StringTok{"data/MMSI daily vessels "} \DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}all{-}files} \AttributeTok{{-}{-}full{-}months} \DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}distance{-}km}\NormalTok{ 25 }\AttributeTok{{-}{-}day{-}window}\NormalTok{ 1 }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}out{-}csv}\NormalTok{ artifacts/eight\_pairs\_overlap\_by\_month.csv }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}out{-}plot}\NormalTok{ artifacts/plots/eight\_pairs\_overlap\_by\_month.png }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}enrichment}\NormalTok{ artifacts/cooperative\_pairs\_with\_flag\_gear.csv}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Faster test run (subsamples daily files; shorter runtime):} omit
+\texttt{-\/-all-files} and add e.g.~\texttt{-\/-max-files-per-year\ 30}.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\clearpage
+
+\section*{Appendix C --- Notation and formal problem
+setup}\label{appendix-c-notation-and-formal-problem-setup}
+\addcontentsline{toc}{section}{Appendix C --- Notation and formal
+problem setup}
+
+\emph{This appendix condenses §3.1 for readers who want a symbol list.
+It may be \textbf{omitted in slide versions} or reordered after A--B if
+a thesis program requires a specific appendix sequence.}
+
+\subsection*{Symbol glossary}\label{symbol-glossary}
+\addcontentsline{toc}{subsection}{Symbol glossary}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.4706}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5294}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Symbol
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Meaning
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\(t\) & A calendar \textbf{day} (time bucket) in the AIS timeline. \\
+\(\mathcal{T}\) & The set of days used after filtering (e.g., days with
+edges). \\
+\(V\) & Set of \textbf{nodes} (9-digit vessel \textbf{MMSIs} appearing
+in the extract). \\
+\(G_t = (V, E_t)\) & \textbf{Undirected} snapshot graph for day
+\(t\). \\
+\(E_t\) & \textbf{Edges} for day \(t\): proximity (§3.3) ± optional
+social edges (§3.3). \\
+\(u, v\) & Distinct nodes (unordered pair \(\{u,v\}\)). \\
+\(s_{u,v}\) & \textbf{Scalar score} (logit) for pair \((u,v)\) on a
+given forward pass / bucket. \\
+\(\mathbf{h}_u\) & \textbf{Embedding vector} for node \(u\) after the
+TGCN (dimension \textbf{32} in the primary run). \\
+\(\mathcal{T}_{\mathrm{train}}, \mathcal{T}_{\mathrm{test}}\) &
+\textbf{Chronological} partition of buckets (\textbf{\textasciitilde70\%
+/ \textasciitilde30\%}). \\
+\end{longtable}
+}
+
+\subsection*{Graph semantics}\label{graph-semantics}
+\addcontentsline{toc}{subsection}{Graph semantics}
+
+For each day \(t \in \mathcal{T}\), the graph \(G_t = (V, E_t)\) is
+\textbf{undirected}. An edge \(\{u,v\} \in E_t\) means the vessels met
+the \textbf{construction rule} for that day---typically
+\textbf{same-day} positions within \textbf{10~km}, optionally plus
+\textbf{same three-digit MID} ties. Edges encode \textbf{graph
+structure}, not adjudicated cooperation. The vertex set \(V\) may be
+fixed globally or built per implementation; \(|E_t|\) is kept
+\textbf{sparse} and sometimes \textbf{capped per day} for memory (§3.3).
+
+\subsection*{Temporal link prediction objective
+(informal)}\label{temporal-link-prediction-objective-informal}
+\addcontentsline{toc}{subsection}{Temporal link prediction objective
+(informal)}
+
+The model reads the sequence \(\{G_t\}\) (with optional \textbf{temporal
+node features}) into recurrent states and node embeddings
+\(\mathbf{h}_u\). On each training day in
+\(\mathcal{T}_{\mathrm{train}}\), \textbf{positives} are edges present
+that day; \textbf{negatives} are sampled non-edges with counts matched
+\textbf{per day} in code. Pair logits follow
+\(s_{u,v} \propto \mathbf{h}_u^\top \mathbf{h}_v\) and are trained with
+\textbf{binary cross-entropy with logits}. Labels encode
+\textbf{presence or absence of an edge}, not IUU or transshipment.
+
+\textbf{Evaluation.} On \(\mathcal{T}_{\mathrm{test}}\), ROC AUC and AP
+measure how highly \textbf{true} test edges rank versus
+\textbf{non-edges} under the evaluation script's protocol. Large values
+indicate \textbf{consistent ranking of observed contacts}, not legal
+liability.
+
+\subsection*{Training vs validation
+distances}\label{training-vs-validation-distances}
+\addcontentsline{toc}{subsection}{Training vs validation distances}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1750}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.6750}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1500}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Stage
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Typical distance / rule
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Role
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Graph edges (training signal)} & \textbf{\(\leq\) 10 km}, same
+\textbf{day} & Defines \(E_t\) for learning. \\
+\textbf{Candidate screening (post-hoc)} & \textbf{25 / 50 / 100 km},
+optional \textbf{±1 day} & \textbf{Not} used as training labels;
+validates high-scoring pairs on raw tracks (§3.5). \\
+\end{longtable}
+}
+
+Sections §3.3--3.5 repeat this distinction so \textbf{training edges}
+are not confused with \textbf{analyst thresholds} used afterward.
+
+\end{document}

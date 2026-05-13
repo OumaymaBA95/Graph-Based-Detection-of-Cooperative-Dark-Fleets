@@ -94,9 +94,16 @@ def main():
         default="artifacts/cooperative_pairs_with_flag_gear.csv",
         help="CSV for country/gear labels (optional)",
     )
+    ap.add_argument(
+        "--gear-enrichment",
+        default="artifacts/candidate_gear_enrichment.csv",
+        help="MMSI-level gear CSV (fills missing gear from --enrichment)",
+    )
     args = ap.parse_args()
 
     enrich = load_enrichment_first_row_per_pair(args.enrichment)
+    from vessel_pair_labels import merge_candidate_gear_into_pairs
+    merge_candidate_gear_into_pairs(enrich, args.gear_enrichment)
 
     df = pd.read_csv(args.overlap_csv)
     if df.empty:
