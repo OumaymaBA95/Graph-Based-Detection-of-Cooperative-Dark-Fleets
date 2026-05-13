@@ -1,37 +1,51 @@
 # Graph-Based Detection of Cooperative Dark Fleets
 
-## What this project is
-This is a senior project that analyzes AIS vessel movement data (2012-2019) to find pairs of vessels that may be moving together in unusual ways.
+This project analyzes AIS vessel movement data (2012-2019) to identify vessel pairs that may be operating in coordinated ways.  
+It uses temporal graph learning to rank candidate pairs, then validates those candidates with geographic overlap checks.
 
-In simple terms:  we turn vessel movement into a graph, run a temporal graph model, and rank the vessel pairs that look most suspicious for further review.
+## Project goal
 
----
-## Why this matters
+This repository is for **screening and prioritization**:
+- detect potentially coordinated vessel pairs from large AIS data
+- rank candidates for analyst review
+- provide supporting evidence (overlap summaries, plots, case studies)
 
-Illegal or hidden coordinated fishing behavior is hard to detect manually.  
-This project helps narrow millions of records into a short list of candidate vessel pairs with supporting evidence.
-
----
+It is **not** a legal decision system.
 
 ## What the pipeline does
-1. Build daily vessel interaction graphs from AIS proximity.
-2. Train a temporal graph model (TGCN-style link prediction).
-3. Score and rank likely vessel pairs.
-4. Validate top pairs using distance/time overlap checks.
-5. Export tables/plots used in the final report and presentation.
+1. Build temporal vessel graphs from AIS proximity  
+2. Train/evaluate temporal graph models (TGCN-style link prediction)  
+3. Score and rank likely vessel pairs  
+4. Validate top pairs with distance/time overlap checks  
+5. Produce report and presentation outputs  
 
-This is a **screening tool** for analysts, not a legal decision system.
+## Key files
 
----
-## Main files to know
-- `docs/final_report.md` - full write-up
-- `scripts/build_temporal_graph_baseline.py` - builds graph edges
-- `scripts/run_tgcn_time_multiseed.py` - trains/evaluates temporal model
-- `scripts/score_tgcn_candidates.py` - scores and ranks candidate pairs
-- `docs/candidate_case_studies.md` - case-study summaries
+### Documentation
+- `docs/final_report.md` (main report source)
+- `docs/candidate_case_studies.md`
+- `docs/gear_types.md`
+- `docs/presentation.md`
+- `docs/presentation_script.md`
 
----
-## Quick setup
+### Core scripts
+- `scripts/build_temporal_graph_baseline.py`
+- `scripts/run_tgcn_time_multiseed.py`
+- `scripts/score_tgcn_candidates.py`
+- `scripts/compute_pair_overlap_from_daily.py`
+- `scripts/plot_pair_overlap_time_series.py`
+- `scripts/analyze_six_vessel_cluster.py`
+- `scripts/add_social_edges.py`
+- `scripts/enrich_pairs_with_flag_gear.py`
+- `scripts/summarize_flag_gear_enrichment.py`
+
+### Build scripts
+- `build_final_report_pdf.sh`
+- `build_presentation_pdf.sh`
+- `build_docs_pdfs.sh`
+- `build_tex.sh`
+
+## Setup
 ```bash
 python3 -m venv venv
 source venv/bin/activate
