@@ -1,97 +1,39 @@
 # Graph-Based Detection of Cooperative Dark Fleets
 
-## Abstract
+## What this project is
+This is a senior project that analyzes AIS vessel movement data (2012-2019) to find pairs of vessels that may be moving together in unusual ways.
 
-This project aims to detect cooperative "dark" fishing activity. The core idea is to combine vessel movement data with sea-surface temperature (SST) time-series as node attributes, and to use a Graph Auto‑Encoder (GAE) to reconstruct edges and surface likely missing links or bridge vessels.
+In simple terms:  we turn vessel movement into a graph, run a temporal graph model, and rank the vessel pairs that look most suspicious for further review.
 
-The pipeline is designed for reproducibility: memory-safe streaming of raw CSVs, vectorized SST extraction from local zarr stores, and a targeted remote fallback (WMTS/ERDDAP) to fill remaining missing SST values.
+---
+## Why this matters
 
-## Features / implemented components
+Illegal or hidden coordinated fishing behavior is hard to detect manually.  
+This project helps narrow millions of records into a short list of candidate vessel pairs with supporting evidence.
 
-- Memory-safe combiner for fleet-daily CSVs (supports CSVs inside ZIP archives). Output: `data/combined_fleet_daily_full.csv`.
-- Streaming split by year: `data/by_year/combined_<YEAR>.csv`.
-- Local gridded data handling: per-year Zarr stores under `data/glorys_by_year/` (if present).
-- Vectorized SST extraction: `scripts/extract_sst_vectorized.py` — groups by dataset time index, interpolates via xarray/zarr, applies a nearest-time tolerance and nearest-grid fallback, and writes chunked Parquet outputs under `data/sst_by_year/<year>/`.
-- Parallel controller: `scripts/run_parallel_years.py` to run extractors per year with worker control and `--years` filtering.
-- QC/status reporting: `scripts/status_report.py` — aggregates parquet outputs, reports missing counts, and produces lightweight SST statistics via reservoir sampling.
-- WMTS fallback helper: `scripts/wmts_fallback.py` — simulate mode produces `data/sst_wmts_sample/plan_simulate.json`; sample mode (live) supports a throttled pilot to query Copernicus WMTS GetFeatureInfo for SST when local zarrs are masked or missing.
+---
 
-## Project status (recent results)
+## What the pipeline does
+1. Build daily vessel interaction graphs from AIS proximity.
+2. Train a temporal graph model (TGCN-style link prediction).
+3. Score and rank likely vessel pairs.
+4. Validate top pairs using distance/time overlap checks.
+5. Export tables/plots used in the final report and presentation.
 
-- Combined CSV rebuilt for years 2012–2019: `data/combined_fleet_daily_full.csv` (≈1.99B rows written during rebuild).
-- Per-year CSV splits: `data/by_year/combined_<YEAR>.csv` for 2012–2019.
-- Per-year parquet SST outputs exist under `data/sst_by_year/<year>/` (vectorized extractor runs completed for available years).
-- QC (recent run): total rows ≈ 2,383,037,575; SST present ≈ 2,322,638,065; SST missing ≈ 60,399,510 (≈2.53%).
+This is a **screening tool** for analysts, not a legal decision system.
 
-## Reproducibility & environment
+---
+## Main files to know
+- `docs/final_report.md` - full write-up
+- `scripts/build_temporal_graph_baseline.py` - builds graph edges
+- `scripts/run_tgcn_time_multiseed.py` - trains/evaluates temporal model
+- `scripts/score_tgcn_candidates.py` - scores and ranks candidate pairs
+- `docs/candidate_case_studies.md` - case-study summaries
 
-We aim for a minimal, reproducible Python environment. Example (macOS / zsh):
-
+---
+## Quick setup
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
-pip install pandas numpy xarray zarr netCDF4 pyarrow requests tqdm scipy pyproj geopandas rtree
-```
-
-Modeling (GNN) dependencies such as PyTorch and `torch-geometric` are environment-specific; install them following their official instructions for your platform.
-
-## Typical workflows and commands
-
-1) Produce the combined CSV (streaming combiner):
-
-```bash
-python3 data_loading_exploration.py --combine --overwrite --years 2012 2019
-```
-
-2) Split by year (if needed):
-
-```bash
-python3 scripts/split_by_year.py --input data/combined_fleet_daily_full.csv --out-dir data/by_year --chunksize 200000
-```
-
-3) Run vectorized SST extraction across a selection of years:
-
-```bash
-python3 scripts/run_parallel_years.py --by-year-dir data/by_year --zarr-dir data/glorys_by_year --out-root data/sst_by_year --workers 16 --chunk-size 50000 --time-tolerance-days 31 --years 2012,2013,2014
-```
-
-4) Run QC/status report:
-
-```bash
-python3 scripts/status_report.py --root data/sst_by_year --sample-size 200000
-```
-
-## WMTS fallback (recommended procedure)
-
-The WMTS fallback addresses residual missing SSTs after vectorized extraction. Recommended steps:
-
-1. Run simulate mode to generate a stratified sample plan (no network calls):
-
-```bash
-python3 scripts/wmts_fallback.py --mode simulate --sample-size 100000
-```
-
-2. Inspect `data/sst_wmts_sample/plan_simulate.json` and a few example URLs.
-
-3. Run a conservative live pilot (e.g., 5,000 requests) to measure fill rate and latency:
-
-```bash
-python3 scripts/wmts_fallback.py --mode sample --sample-size 5000
-```
-
-4. Tune batch size / concurrency / throttle and run the full targeted fallback if the pilot is successful.
-
-The script tries unauthenticated access first; if Copernicus requires credentials, the script reads them from environment variables (see `scripts/wmts_fallback.py` docstring).
-
-## Modeling & experiments (next stage)
-
-After SST extraction and QC:
-
-1. Construct temporal graphs (daily / 6-hour snapshots) where nodes = vessels and edges = co-movement (distance/time thresholds).
-2. Create node features from SST sequences (summary statistics, trend features, and time-series embeddings).
-3. Train a Graph Auto‑Encoder (GAE) to reconstruct adjacency; score candidate missing edges and aggregate to rank bridge-vessel candidates.
-4. Validate using held-out synthetic experiments, manual case studies, and external event overlays (GFW, SAR).
-
----
-
+pip install -r requirements.txt
