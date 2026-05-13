@@ -1,349 +1,93 @@
 # Graph-Based Detection of Cooperative Dark Fleets
 
-*Canonical senior-project write-up: **`docs/final_report.md`** — “Graph-Based Screening for Potentially Cooperative Vessel Pairs” (temporal link prediction / TGCN); title and scope differ slightly from this README. Before binding/PDF, see **`docs/final_submission_checklist.md`**.*
+This project analyzes AIS vessel movement data (2012-2019) to identify vessel pairs that may be operating in coordinated ways.  
 
-**Build PDFs (Pandoc + XeLaTeX; run from repo root):** `./build_presentation_pdf.sh` → `docs/presentation_script.pdf`; `./build_final_report_pdf.sh` → `docs/final_report.pdf`; or `./build_docs_pdfs.sh` for both. **LaTeX sources only:** `./build_tex.sh` regenerates `docs/final_report.tex` and `docs/presentation_script.tex` (then run `xelatex` on a `.tex` yourself if you edit by hand). Requires `pandoc` on `PATH` (or `/opt/homebrew/bin/pandoc`). Use these wrappers so paths are correct—running `pandoc presentation_script.md` from your home directory will fail. R code such as `install.packages()` belongs in the R console, not in Terminal.
+It uses temporal graph learning to rank candidate pairs, then validates those candidates with geographic overlap checks.
 
-If Terminal says **Permission denied** on `./build_*.sh`, mark scripts executable once (paste as a whole line, no `#` comments at the end):  
-`chmod +x build_presentation_pdf.sh build_final_report_pdf.sh build_docs_pdfs.sh build_tex.sh docs/build_presentation_pdf.sh docs/build_final_report_pdf.sh docs/build_tex.sh`
+## Project goal
 
-## Abstract
+This repository is for **screening and prioritization**:
+- detect potentially coordinated vessel pairs from large AIS data
+- rank candidates for analyst review
+- provide supporting evidence (overlap summaries, plots, case studies)
 
-This project aims to detect cooperative "dark" fishing activity. The core idea is to combine vessel movement data with sea-surface temperature (SST) time-series as node attributes, and to use a Graph Auto‑Encoder (GAE) to reconstruct edges and surface likely missing links or bridge vessels.
+It is **not** a legal decision system.
 
-The pipeline is designed for reproducibility: memory-safe streaming of raw CSVs, vectorized SST extraction from local zarr stores, and a targeted remote fallback (WMTS/ERDDAP) to fill remaining missing SST values.
+## What the pipeline does
+1. Build temporal vessel graphs from AIS proximity  
+2. Train/evaluate temporal graph models (TGCN-style link prediction)  
+3. Score and rank likely vessel pairs  
+4. Validate top pairs with distance/time overlap checks  
+5. Produce report and presentation outputs  
 
-How it works:
+## Key files
 
-1. Data: Daily vessel positions (lat/lon) from AIS, plus sea-surface temperature (SST). Vessels are identified by MMSI (9-digit ID).
+### Documentation
+- `docs/final_report.md` (main report source)
+- `docs/candidate_case_studies.md`
+- `docs/gear_types.md`
+- `docs/presentation.md`
+- `docs/presentation_script.md`
 
-2. Graph: Vessels = nodes. An edge connects two vessels if they were close on the same day (within a distance threshold). This gives a “who was near whom, when” network.
+### Core scripts
+- `scripts/build_temporal_graph_baseline.py`
+- `scripts/run_tgcn_time_multiseed.py`
+- `scripts/score_tgcn_candidates.py`
+- `scripts/compute_pair_overlap_from_daily.py`
+- `scripts/plot_pair_overlap_time_series.py`
+- `scripts/analyze_six_vessel_cluster.py`
+- `scripts/add_social_edges.py`
+- `scripts/enrich_pairs_with_flag_gear.py`
+- `scripts/summarize_flag_gear_enrichment.py`
 
-3. Model (TGCN): A temporal graph neural network that learns patterns of co-movement over time. It scores pairs of vessels that don’t have an edge yet but look like they might be linked (missing links / bridge vessels).
+### Build scripts
+- `build_final_report_pdf.sh`
+- `build_presentation_pdf.sh`
+- `build_docs_pdfs.sh`
+- `build_tex.sh`
 
-4. Validation: For high-scoring pairs, we check whether they were actually close in the raw data:
-   - 25km ±1 day = strict (same day or ±1 day, within 25 km)
-   - 50km ±3 days = looser
-   - 100km ±7 days = loosest
-More days within the stricter thresholds = stronger evidence of real proximity.
-
-5. Case studies: The four pairs in the doc are the ones that both score high and have non-zero close-proximity days. Pair 1 (412000690↔412325200) has the strongest evidence (102 days within 25km ±1 day).
-Limitations: We use grid cells, not exact GPS; there’s no ground truth for “cooperative”; and results depend on the 2012–2019 period and chosen thresholds.
-
-Limitations: We use grid cells, not exact GPS; there’s no ground truth for “cooperative”; and results depend on the 2012–2019 period and chosen thresholds.
-
-## Golden path (reproduce main results)
-
-If you only run one sequence, run this. It reproduces the **final time‑split baseline** and points to the **ranked candidate output**.
-
-1. Ensure dependencies are installed (see “Reproducibility & environment” below).
-2. Build the full‑coverage temporal edge list:
-
-```bash
-python3 scripts/build_temporal_graph_baseline.py --years 2012,2013,2014,2015,2016,2017,2018,2019 --out-edges artifacts/edges_2012_2019_full.parquet
-```
-
-3. Run the final baseline (time‑split). Use full‑coverage edges if you have sufficient RAM; otherwise use the capped graph:
-
-```bash
-# Full coverage (Mac: use --max-train-buckets 1500 to avoid OOM; yields ROC AUC ~0.78)
-KMP_DUPLICATE_LIB_OK=TRUE python3 scripts/run_tgcn_time_multiseed.py --edges artifacts/edges_2012_2019_full.parquet --epochs 5 --embedding-dim 32 --lr 0.001 --seeds 1 --use-temporal-node-features --max-train-buckets 1500 --out-report artifacts/tgcn_time_temporal_nodes_fullcoverage.json
-
-# Rolling-window cross-validation (--cv-folds 5 for mean ± std across folds)
-KMP_DUPLICATE_LIB_OK=TRUE python3 scripts/run_tgcn_time_multiseed.py --edges artifacts/edges_2012_2019_cap5000_even30.parquet --epochs 5 --embedding-dim 32 --lr 0.001 --seeds 1 --use-temporal-node-features --cv-folds 5 --out-report artifacts/tgcn_cv_report.json
-
-# Capped graph (laptop-friendly; Mac: use KMP_DUPLICATE_LIB_OK=TRUE if OMP "already initialized" error)
-KMP_DUPLICATE_LIB_OK=TRUE python3 scripts/run_tgcn_time_multiseed.py --edges artifacts/edges_2012_2019_cap5000_even30.parquet --epochs 5 --embedding-dim 32 --lr 0.001 --seeds 1,2,3 --use-temporal-node-features --out-report artifacts/tgcn_time_temporal_nodes_smoke.json
-```
-
-4. Documentation:
-- **Thesis draft**: `docs/thesis_draft.md`
-- **Defense prep (Q&A)**: `docs/defense_prep.md`
-- **Case studies**: `docs/candidate_case_studies.md` (metadata lookup template for MarineTraffic, GFW)
-
-5. Ranked candidates + validation evidence:
-- Ranked candidates: `artifacts/tgcn_candidate_scores_fullcoverage.parquet` (top-1000, 1500-bucket model)
-- Ranked candidates (legacy): `artifacts/tgcn_candidate_scores_fullcoverage_top500.csv`
-- Shortlist + validation: `docs/final_shortlist.md`
-- Findings table (score + evidence joins): `docs/candidate_findings.md` (generated by `scripts/make_candidate_findings.py`)
-- Overlap validation (top-100, multiple thresholds): `artifacts/top100_overlap_summary_daily_full_*.csv`.
-- Monthly overlap for 8 validated pairs: `artifacts/eight_pairs_overlap_by_month.csv` (heatmap in `artifacts/plots/eight_pairs_overlap_by_month.png`), generated by `scripts/overlap_by_month_8pairs.py`. **Full command (copy/paste from project root — do not type `...`):**
-
-```bash
-PYTHONPATH=scripts python3 scripts/overlap_by_month_8pairs.py \
-  --pairs artifacts/close_pairs_fullcoverage_25km_w1.csv \
-  --daily-root "data/MMSI daily vessels " \
-  --all-files --full-months \
-  --distance-km 25 --day-window 1 \
-  --out-csv artifacts/eight_pairs_overlap_by_month.csv \
-  --out-plot artifacts/plots/eight_pairs_overlap_by_month.png \
-  --enrichment artifacts/cooperative_pairs_with_flag_gear.csv
-```
-
-*Quicker run:* drop `--all-files` and use e.g. `--max-files-per-year 30`.
-- Monthly time-series plots (per pair and combined): `artifacts/plots/pair_overlap_series/`, generated by `scripts/plot_pair_overlap_time_series.py`.
-- Six-vessel spatial cluster summary and scatter plot: `artifacts/six_vessel_cluster_summary.csv` and `artifacts/plots/six_vessel_cluster_scatter.png`, generated by `scripts/analyze_six_vessel_cluster.py`.
-
-To add **social-similarity edges** (same flag from MMSI MID via `scripts/mmsi_mid.py`, or from an optional `mmsi,flag[,owner_id]` CSV) to a proximity edge list:
-
-```bash
-python3 scripts/add_social_edges.py --edges artifacts/edges_2012_2019_full.parquet \
-  --out artifacts/edges_full_with_social.parquet --max-social-per-bucket 2000
-python3 scripts/add_social_edges.py --edges artifacts/edges_2012_2019_cap5000_even30.parquet \
-  --out artifacts/edges_cap5000_with_social.parquet --max-social-per-bucket 2000
-```
-
-The TGCN pipeline accepts the combined parquet (proximity + social) as its edge input. After rebuilding social edges, re-run TGCN so JSON metrics match the new edge list. **Smoke + full laptop recipe:** `docs/tgcn_retrain_midfix.md` and `./scripts/run_tgcn_full_social_midfix.sh` (writes `artifacts/tgcn_full_with_social_midfix_maxb1500.json`).
-
-**Improve AUC / compare designs:** `docs/tgcn_improvement_suite.md` — `python3 scripts/run_tgcn_improvement_suite.py` (ablations: proximity-only vs social, hard negatives, GConvGRU, vessel-day features; outputs `artifacts/tgcn_improvement_suite_summary.csv`).
-
-**Per-bucket AUC/AP plots** from a TGCN JSON report: `python3 scripts/plot_tgcn_bucket_metrics.py --report artifacts/tgcn_social_maxb1450_ep3.json --out-dir artifacts/plots` (requires `matplotlib`).
-
-**Flag/gear figures** (heatmap, same-MID bar, timeline): `python3 scripts/plot_flag_gear_enrichment.py --input artifacts/cooperative_pairs_with_flag_gear.csv --out-dir artifacts/plots`
-
-Regenerate **`docs/candidate_findings.md`** (scores + overlap + optional enrichment columns):
-
-```bash
-python3 scripts/make_candidate_findings.py
-```
-
-**Flag / gear context for top candidate pairs (August 2017 window):** from the project root, with `pandas` installed:
-
-```bash
-cd "/path/to/Senior Project"
-python3 scripts/enrich_pairs_with_flag_gear.py
-python3 scripts/summarize_flag_gear_enrichment.py
-```
-
-Outputs: `artifacts/cooperative_pairs_with_flag_gear.csv`, `artifacts/flag_gear_enrichment_summary.md`, and `artifacts/flag_gear_enrichment_summary.json`. Requires per-day MMSI CSVs under `data/MMSI daily vessels /` and matching `data/fleet-daily-csvs-100-v3-<year>/` daily files (see `docs/final_report.md` §4.4 and Appendix).
-
-**What each gear code means** (trawlers, set gillnets, fixed gear, etc.): **`docs/final_report.md` Appendix A** (full table for the thesis); repo mirror **`docs/gear_types.md`**.
-
-For a full map of key outputs, see `artifacts/manifest.md`.
-
-## Features / implemented components
-
-- Memory-safe combiner for fleet-daily CSVs (supports CSVs inside ZIP archives). Output: `data/combined_fleet_daily_full.csv`.
-- Streaming split by year: `data/by_year/combined_<YEAR>.csv`.
-- Local gridded data handling: per-year Zarr stores under `data/glorys_by_year/` (if present).
-- Vectorized SST extraction: `scripts/extract_sst_vectorized.py` — groups by dataset time index, interpolates via xarray/zarr, applies a nearest-time tolerance and nearest-grid fallback, and writes chunked Parquet outputs under `data/sst_by_year/<year>/`.
-- Parallel controller: `scripts/run_parallel_years.py` to run extractors per year with worker control and `--years` filtering.
-- QC/status reporting: `scripts/status_report.py` — aggregates parquet outputs, reports missing counts, and produces lightweight SST statistics via reservoir sampling.
-- WMTS fallback helper: `scripts/wmts_fallback.py` — simulate mode produces `data/sst_wmts_sample/plan_simulate.json`; sample mode (live) supports a throttled pilot to query Copernicus WMTS GetFeatureInfo for SST when local zarrs are masked or missing.
-
-## Project status (recent results)
-
-- Combined CSV rebuilt for years 2012–2019: `data/combined_fleet_daily_full.csv` (≈1.99B rows written during rebuild).
-- Per-year CSV splits: `data/by_year/combined_<YEAR>.csv` for 2012–2019.
-- Per-year parquet SST outputs exist under `data/sst_by_year/<year>/` (vectorized extractor runs completed for available years).
-- QC (recent run): total rows ≈ 2,383,037,575; SST present ≈ 2,322,638,065; SST missing ≈ 60,399,510 (≈2.53%).
-
-## Reproducibility & environment
-
-We aim for a minimal, reproducible Python environment. Example (macOS / zsh):
+## Setup
 
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
-# or a minimal subset:
-pip install pandas numpy xarray zarr netCDF4 pyarrow requests tqdm scipy pyproj geopandas rtree
 ```
 
-Modeling (GNN) dependencies such as PyTorch and `torch-geometric` are environment-specific; install them following their official instructions for your platform.
+## Quick reproduction path
 
-## Typical workflow (plain-English overview)
-
-At a high level, the project follows these stages:
-
-1. **Combine raw daily CSVs** into a single, memory-safe dataset.
-2. **Split by year** so processing can be parallelized and resumed easily.
-3. **Extract SST values** from local gridded data (with a remote fallback if needed).
-4. **Run QC** to verify missing rates and summary statistics.
-5. **Build graphs and evaluate baselines** for link prediction.
-
-Below are a few key command examples. If you’re only reading the README, you can skim the headings
-and skip the code blocks.
-
-### Step 1 — Combine daily CSVs
+### 1) Build temporal edges
 
 ```bash
-python3 data_loading_exploration.py --combine --overwrite --years 2012 2019
+python3 scripts/build_temporal_graph_baseline.py \
+  --years 2012,2013,2014,2015,2016,2017,2018,2019 \
+  --out-edges artifacts/edges_2012_2019_full.parquet
 ```
 
-### Step 2 — Split by year
+### 2) Train/evaluate TGCN baseline
 
 ```bash
-python3 scripts/split_by_year.py --input data/combined_fleet_daily_full.csv --out-dir data/by_year --chunksize 200000
+KMP_DUPLICATE_LIB_OK=TRUE python3 scripts/run_tgcn_time_multiseed.py \
+  --edges artifacts/edges_2012_2019_full.parquet \
+  --epochs 5 \
+  --embedding-dim 32 \
+  --lr 0.001 \
+  --seeds 1 \
+  --use-temporal-node-features \
+  --max-train-buckets 1500 \
+  --out-report artifacts/tgcn_time_temporal_nodes_fullcoverage.json
 ```
 
-### Step 3 — Extract SST
+### 3) Score candidate pairs
 
 ```bash
-python3 scripts/run_parallel_years.py --by-year-dir data/by_year --zarr-dir data/glorys_by_year --out-root data/sst_by_year --workers 16 --chunk-size 50000 --time-tolerance-days 31 --years 2012,2013,2014
+python3 scripts/score_tgcn_candidates.py \
+  --edges artifacts/edges_2012_2019_full.parquet \
+  --epochs 5 \
+  --embedding-dim 32 \
+  --seed 42 \
+  --top-k 200 \
+  --use-temporal-node-features \
+  --out artifacts/tgcn_candidate_scores.parquet
 ```
-
-### Step 4 — QC/status report
-
-```bash
-python3 scripts/status_report.py --root data/sst_by_year --sample-size 200000
-```
-
-## WMTS fallback (recommended procedure)
-
-The WMTS fallback addresses residual missing SSTs after vectorized extraction. Recommended steps:
-
-In short: we first **simulate** a sample plan (no network calls), then run a **small live pilot** to
-measure fill rate and latency, and only then scale up if the pilot is successful.
-
-1. Run simulate mode to generate a stratified sample plan (no network calls):
-
-```bash
-python3 scripts/wmts_fallback.py --mode simulate --sample-size 100000
-```
-
-2. Inspect `data/sst_wmts_sample/plan_simulate.json` and a few example URLs.
-
-3. Run a conservative live pilot (e.g., 5,000 requests) to measure fill rate and latency:
-
-```bash
-python3 scripts/wmts_fallback.py --mode sample --sample-size 5000
-```
-
-4. Tune batch size / concurrency / throttle and run the full targeted fallback if the pilot is successful.
-
-The script tries unauthenticated access first; if Copernicus requires credentials, the script reads them from environment variables (see `scripts/wmts_fallback.py` docstring).
-
-Pilot checklist: see `docs/wmts_pilot_plan.md` for throttle/concurrency settings and metrics to log.
-
-## Modeling & experiments (next stage)
-
-After SST extraction and QC:
-
-1. Construct temporal graphs (daily / 6-hour snapshots) where nodes = vessels and edges = co-movement (distance/time thresholds).
-2. Create node features from SST sequences (summary statistics, trend features, and time-series embeddings).
-3. Train a Graph Auto‑Encoder (GAE) to reconstruct adjacency; score candidate missing edges and aggregate to rank bridge-vessel candidates.
-4. Validate using held-out synthetic experiments, manual case studies, and external event overlays (GFW, SAR).
-
-## Baseline modeling (temporal graph + link prediction)
-
-**Official baseline (frozen):** Linear GAE (multi-seed), no features, using
-`artifacts/edges_2012_2019_cap5000_even30.parquet` with $\text{embedding\_dim}=32$ and test split 0.3.
-Treat SST features as an ablation; they are reported but not used for the main baseline score.
-
-### What this section contains
-
-This section documents how we build a **temporal co‑movement graph**, evaluate a **linear GAE baseline**,
-and track results in a comparison table for the report. Heuristic baselines and ablations are still available,
-but the key commands below are the shortest path to reproducing the main results.
-
-## Results (baseline snapshot)
-
-See `artifacts/baseline_comparison.md` for the latest comparison table. Key points from the current
-snapshot:
-
-- Linear GAE (multi-seed, no features) on `edges_2012_2019_cap5000_even30.parquet`: ROC AUC ≈ 0.935, AP ≈ 0.948.
-- Heuristic baselines (best of CN/Jaccard/AA): ROC AUC ≈ 0.922, AP ≈ 0.948.
-- GAE prototype on the full 2012–2019 slice (with SST features) reaches ROC AUC ≈ 0.952, AP ≈ 0.963.
-- Node2vec baseline (random split) reaches ROC AUC ≈ 0.852, AP ≈ 0.860.
-- Torch GAE prototype on 2012–2019 is lower (multi‑seed ROC AUC ≈ 0.721, AP ≈ 0.730; single‑seed ROC AUC ≈ 0.732, AP ≈ 0.746) and still needs tuning/data; the 2018–2019 slice is slightly higher (ROC AUC ≈ 0.787, AP ≈ 0.807).
-- Time‑based splits are substantially harder: linear GAE (multi‑seed) ROC AUC ≈ 0.580, AP ≈ 0.631; tuned Torch GAE (multi‑seed) ROC AUC ≈ 0.580, AP ≈ 0.601; movement+SST+stop‑rate features (sampled) reach ROC AUC ≈ 0.569, AP ≈ 0.635; temporal interaction features (3 seeds) reach ROC AUC ≈ 0.628, AP ≈ 0.679; edge‑temporal baseline is at chance (ROC AUC ≈ 0.500, AP ≈ 0.500); TGN‑lite reaches ROC AUC ≈ 0.332, AP ≈ 0.462; TGCN time‑split (3 seeds, 5 buckets) reaches ROC AUC ≈ 0.512, AP ≈ 0.711 (single‑bucket run is higher but less stable); GConvGRU time‑split (3 seeds, 5 buckets) reaches ROC AUC ≈ 0.414, AP ≈ 0.664; GConvLSTM time‑split (3 seeds, 5 buckets) reaches ROC AUC ≈ 0.478, AP ≈ 0.702; TGCN + temporal node features (3 seeds, 5 buckets) reaches ROC AUC ≈ 0.784, AP ≈ 0.878; TGCN + temporal node features (3 seeds, all test buckets) reaches ROC AUC ≈ 0.883, AP ≈ 0.921.
-- Single-year GAE prototype runs (2018/2019) are lower as expected due to fewer edges but validate the pipeline on year slices.
-
-```bash
-python3 scripts/score_tgcn_candidates.py --edges artifacts/edges_2012_2019_cap5000_even30.parquet --epochs 5 --embedding-dim 32 --test-ratio 0.3 --seed 42 --candidates-per-node 20 --top-k 200 --use-temporal-node-features --out artifacts/tgcn_candidate_scores.parquet
-```
-
-### Enrich candidate pairs with activity summaries
-
-```bash
-python3 scripts/enrich_candidate_pairs.py --pairs artifacts/tgcn_candidate_pairs_report.csv --features-root data/features_by_year --out artifacts/tgcn_candidate_pairs_enriched.csv
-```
-
-### Generate candidate findings report
-
-```bash
-python3 scripts/make_candidate_findings.py --input artifacts/tgcn_candidate_pairs_enriched_top50.csv --out docs/candidate_findings.md --top-k 20
-```
-
-### Candidate case studies (full coverage)
-
-See `docs/candidate_case_studies.md` for the top-5 pairs with overlap stats and plot links.
-
-### Results summary
-
-See `docs/results_summary.md` for the finalized baseline metrics and findings.
-
-## Gear classification (movement-based, anonymized training data)
-
-The repository also includes a proof-of-concept movement-based gear classifier trained on anonymized AIS training data (per-point tracks labeled implicitly by file: `trawlers.csv`, `purse_seines.csv`, `fixed_gear.csv`, `pole_and_line.csv`, `trollers.csv`, `unknown.csv` under `Anonymized AIS training data/`). The classifier predicts gear type from simple movement features (`distance_from_shore`, `distance_from_port`, `speed`, `course`).
-
-To train and evaluate the classifier:
-
-```bash
-python3 scripts/train_gear_classifier.py \
-  --data-root "/Users/momoba/Desktop/Senior Project" \
-  --max-rows-per-file 200000 \
-  --out-model artifacts/gear_classifier.joblib \
-  --out-report artifacts/gear_classifier_report.txt
-```
-
-This writes a scikit-learn `RandomForestClassifier` to `artifacts/gear_classifier.joblib` and a classification report to `artifacts/gear_classifier_report.txt`. Because the training data are anonymized, this model is not linked directly to the real MMSIs in the main graph; instead, it demonstrates how movement-based gear classification could be integrated in future once non-anonymized vessel metadata are available.
-
-### Where to find additional scripts
-
-If you need the full list of baseline and ablation commands (heuristics, feature variants, logging),
-see the `scripts/` directory and `artifacts/baseline_comparison.md` for reference.
-
-
-### Build the temporal graph
-
-```bash
-python3 scripts/build_temporal_graph_baseline.py --years 2012,2013,2014,2015,2016,2017,2018,2019 --rows-per-year 2000 --max-files-per-year 12 --file-sampling even --seed 42 --out-edges artifacts/edges_2012_2019_cap2000_even12.parquet --time-floor 1D --max-per-bucket 300 --distance-km 10
-```
-
-### Generate report artifacts
-
-```bash
-python3 scripts/make_baseline_report.py --log-csv artifacts/experiment_log.csv --out-dir artifacts/plots --out-summary artifacts/baseline_summary.csv --out-md artifacts/baseline_summary.md --limit 2
-```
-
-### Unified comparison table
-
-```bash
-python3 scripts/make_baseline_comparison.py --log-csv artifacts/experiment_log.csv --out-csv artifacts/baseline_comparison.csv --out-md artifacts/baseline_comparison.md --limit 10
-```
-
-### Build SST feature summaries
-
-```bash
-python3 scripts/build_vessel_day_features.py --years 2018 --sst-root data/sst_by_year --out-root data/features_by_year --max-files-per-year 10 --file-sampling even --max-rows-per-file 50000
-```
-
-### Linear GAE multiseed
-
-```bash
-python3 scripts/run_linear_gae_baseline.py --edges artifacts/edges_2012_2019_cap5000_even30.parquet --embedding-dim 32 --test-ratio 0.3 --seed 42 --out-report artifacts/linear_gae_report.json
-```
-
-### Linear GAE baseline
-
-```bash
-python3 scripts/run_linear_gae_multiseed.py --edges artifacts/edges_2012_2019_cap5000_even30.parquet --embedding-dim 32 --test-ratio 0.3 --seeds 1,2,3,4,5 --out-report artifacts/linear_gae_multiseed.json --out-csv artifacts/linear_gae_multiseed.csv
-```
-
-### TGCN with improvements (hard negatives, tuning, ensemble)
-
-```bash
-# Hard negative sampling (2-hop pairs as negatives)
-python3 scripts/run_tgcn_time_multiseed.py --edges artifacts/edges_2012_2019_cap5000_even30.parquet --use-temporal-node-features --use-hard-negatives --epochs 10 --out-report artifacts/tgcn_hardneg.json
-
-# Hyperparameter tuning (grid over embedding_dim, epochs, lr, cheb_k)
-python3 scripts/tune_tgcn_hyperparams.py --edges artifacts/edges_2012_2019_cap5000_even30.parquet --out-csv artifacts/tgcn_tune_results.csv
-
-# Ensemble scoring (average over multiple seeds)
-python3 scripts/score_tgcn_candidates.py --edges artifacts/edges_2012_2019_cap5000_even30.parquet --seeds 1,2,3 --use-temporal-node-features --top-k 200 --out artifacts/tgcn_candidate_scores_ensemble.parquet
-```
-
-### Score candidate edges (temporal GNN)
