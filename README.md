@@ -1,6 +1,7 @@
 # Graph-Based Detection of Cooperative Dark Fleets
 
 This project analyzes AIS vessel movement data (2012-2019) to identify vessel pairs that may be operating in coordinated ways.  
+
 It uses temporal graph learning to rank candidate pairs, then validates those candidates with geographic overlap checks.
 
 ## Project goal
